@@ -1,0 +1,69 @@
+DESCRIPTION = "Music Player Daemon"
+LICENSE = "GPLv2"
+LIC_FILES_CHKSUM = "file://COPYING;md5=751419260aa954499f7abaabaa882bbe"
+HOMEPAGE ="www.musicpd.org"
+
+DEPENDS = "alsa-lib libsamplerate0 libsndfile1 libvorbis libogg faad2 flac curl sqlite bzip2 libmpdclient libmad lame samba libnfs libupnp"
+
+SRCREV = "adb89e012149157203813577f43306240072f070"
+SRC_URI = "git://git.musicpd.org/master/mpd.git \
+	file://mpd \
+    file://mpd.conf.in \
+"
+
+S = "${WORKDIR}/git"
+
+inherit autotools useradd update-rc.d
+
+EXTRA_OECONF = "enable_bzip2=yes"
+EXTRA_OECONF += "enable_mad=yes"
+EXTRA_OECONF += "enable_id3=yes"
+EXTRA_OECONF += "enable_libmpdclient=yes"
+EXTRA_OECONF += "enable_nfs=no"
+EXTRA_OECONF += "enable_smbclient=yes"
+EXTRA_OECONF += "enable_upnp=yes"
+
+INITSCRIPT_NAME = "mpd"
+INITSCRIPT_PARAMS = "defaults 75"
+
+FILES_${PN} += "${sysconfdir}/init.d/* /var/*"
+
+do_configure_prepend() {
+	./autogen.sh
+}
+
+do_install_append() {
+    install -d ${D}/${localstatedir}/lib/mpd/music
+    chmod 775 ${D}/${localstatedir}/lib/mpd/music
+    install -d ${D}/${localstatedir}/lib/mpd/playlists
+    chown -R mpd:mpd ${D}/${localstatedir}/lib/mpd
+    chown mpd:mpd ${D}/${localstatedir}/lib/mpd/music
+
+    install -d ${D}/${sysconfdir}
+    install -m 644 ${WORKDIR}/mpd.conf.in ${D}/${sysconfdir}/mpd.conf
+    sed -i \
+        -e 's|%music_directory%|${localstatedir}/lib/mpd/music|' \
+        -e 's|%playlist_directory%|${localstatedir}/lib/mpd/playlists|' \
+        -e 's|%db_file%|${localstatedir}/lib/mpd/mpd.db|' \
+        -e 's|%log_file%|${localstatedir}/log/mpd.log|' \
+        -e 's|%state_file%|${localstatedir}/lib/mpd/state|' \
+        ${D}/${sysconfdir}/mpd.conf
+	
+    install -d ${D}${sysconfdir}/init.d
+    install -m 0755 ${WORKDIR}/mpd ${D}${sysconfdir}/init.d/
+
+    chown mpd:mpd ${D}/${localstatedir}/lib/mpd
+
+    install -d ${D}${sysconfdir}/default/volatiles
+    echo "d mpd mpd 0775 ${localstatedir}/run/mpd none" \
+        > ${D}${sysconfdir}/default/volatiles/99_mpd
+    echo "d mpd mpd 0775 ${localstatedir}/log/mpd none" \
+        >> ${D}${sysconfdir}/default/volatiles/99_mpd	
+}
+
+USERADD_PACKAGES = "${PN}"
+USERADD_PARAM_${PN} = " \
+    --system --no-create-home \
+    --home ${localstatedir}/lib/mpd \
+    --groups audio \
+    --user-group mpd"
