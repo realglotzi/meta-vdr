@@ -1,0 +1,54 @@
+#!/bin/sh
+### BEGIN INIT INFO
+# Provides:		esound
+# Required-Start:	$remote_fs $syslog $networking
+# Required-Stop:	$remote_fs $syslog
+# Default-Start:	2 3 4 5
+# Default-Stop:		1
+# Short-Description:	esound
+### END INIT INFO
+#
+# Do not configure this file. Edit /etc/default/esound instead!
+#
+
+PATH=/usr/local/sbin:/usr/local/bin:/sbin:/bin:/usr/sbin:/usr/bin
+DAEMON=/usr/bin/esd
+NAME=esound
+DESC="esound"
+
+ESOUND_EXTRA_ARGS="-tcp -public -bind 0.0.0.0"
+NO_START=1
+
+set -e
+
+test ! -r /etc/default/esound || . /etc/default/esound
+test "$NO_START" = "0" || exit 0
+test -x "$DAEMON" || exit 0
+test ! -h /var/service/esound || exit 0
+
+case "$1" in
+  start)
+	echo -n "Starting $DESC: "
+	start-stop-daemon -b -S -x "$DAEMON" -- $ESOUND_EXTRA_ARGS
+	echo "$NAME."
+	;;
+  stop)
+	echo -n "Stopping $DESC: "
+	start-stop-daemon -K -x "$DAEMON"
+	echo "$NAME."
+	;;
+  restart|force-reload)
+	echo -n "Restarting $DESC: "
+	start-stop-daemon -K -x "$DAEMON"
+	sleep 1
+	start-stop-daemon -b -S -x "$DAEMON" -- $ESOUND_EXTRA_ARGS
+	echo "$NAME."
+	;;
+  *)
+	N=/etc/init.d/$NAME
+	echo "Usage: $N {start|stop|restart|force-reload}" >&2
+	exit 1
+	;;
+esac
+
+exit 0
