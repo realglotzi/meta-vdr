@@ -1,0 +1,66 @@
+From 7ca57bcb8f9b0f181b7b14308462f99e4ddbcd79 Mon Sep 17 00:00:00 2001
+From: Dirk Wagner <glotzi@ipfire.org>
+Date: Mon, 12 Nov 2012 09:56:08 +0100
+Subject: [PATCH] Fixed sig
+
+---
+ remotelinux.cc |    8 ++++----
+ remotelinux.h  |    8 ++++----
+ 2 files changed, 8 insertions(+), 8 deletions(-)
+
+diff --git a/remotelinux.cc b/remotelinux.cc
+index fad7baf..7d7f2e2 100644
+--- a/remotelinux.cc
++++ b/remotelinux.cc
+@@ -877,25 +877,25 @@ char* RemoteLinux::HCWDesc(unsigned long long hcw)
+ }
+ 
+ 
+-int RemoteLinux::cecLogMessage(void *param, const cec_log_message &message)
++int RemoteLinux::cecLogMessage(void *param, const CEC::cec_log_message message)
+ {
+ 	Log::getInstance()->log("Remote", Log::DEBUG, "CECLOG: %lld %d %s",message.time , message.level, message.message );
+ 	return 0;
+ }
+ 
+-int RemoteLinux::cecKeyPress(void*param, const cec_keypress &key)
++int RemoteLinux::cecKeyPress(void*param, const CEC::cec_keypress key)
+ {
+ 	//Log::getInstance()->log("Remote", Log::DEBUG, "Incoming cec key %d %d", key.keycode,key.duration);
+ 	if (key.duration==0) ((RemoteLinux*)Remote::getInstance())->incomingCECkey(key.keycode);
+ 	return 1;
+ }
+-int RemoteLinux::cecCommand(void *param, const cec_command &command)
++int RemoteLinux::cecCommand(void *param, const CEC::cec_command command)
+ {
+ 	//Log::getInstance()->log("Remote", Log::DEBUG, "CECCommand: %d",command.opcode);
+ 	return 1;
+ }
+ 
+-int RemoteLinux::cecConfigurationChanged(void *param, const libcec_configuration &config)
++int RemoteLinux::cecConfigurationChanged(void *param, const CEC::libcec_configuration config)
+ {
+ 	//Log::getInstance()->log("Remote", Log::DEBUG, "CECConfig:"/*,config.string()*/);
+ 	return 1;
+diff --git a/remotelinux.h b/remotelinux.h
+index 0c96427..1e41577 100644
+--- a/remotelinux.h
++++ b/remotelinux.h
+@@ -87,10 +87,10 @@ class RemoteLinux : public Remote
+ 
+     void incomingCECkey(int keys);
+ 
+-	static int cecLogMessage(void *param, const CEC::cec_log_message &message);
+-	static int cecKeyPress(void*param, const CEC::cec_keypress &key);
+-	static int cecCommand(void *param, const CEC::cec_command &command);
+-	static int cecConfigurationChanged(void *param, const CEC::libcec_configuration &config);
++	static int cecLogMessage(void *param, const CEC::cec_log_message message);
++	static int cecKeyPress(void*param, const CEC::cec_keypress key);
++	static int cecCommand(void *param, const CEC::cec_command command);
++	static int cecConfigurationChanged(void *param, const CEC::libcec_configuration config);
+ 
+ };
+ 
+-- 
+1.7.7
+

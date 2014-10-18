@@ -1,0 +1,65 @@
+--- git/devnull	1970-01-01 01:00:00.000000000 +0100
++++ git/Makefile.oe	2012-10-17 22:04:41.000000000 +0200
+@@ -0,0 +1,62 @@
++
++# This is the only thing windows and linux share
++include objects.mk
++
++# OBJECTSWIN = threadwin.o remotewin.o ledwin.o mtdwin.o videowin.o audiowin.o osdwin.o surfacewin.o
++
++OBJECTS = $(OBJECTS1) 
++OBJECTS += main.o threadp.o  osdvector.o surfacevector.o osdopenvg.o ledraspberry.o mtdraspberry.o videoomx.o audioomx.o wjpegsimple.o remotelinux.o  
++
++CXXFLAGS_DEV += -DVOMP_HAS_EXIT -DVOMP_PLATTFORM_RASPBERRY -D__STDC_CONSTANT_MACROS -g -O0 -Wall -Wshadow -DDEVXXX -D_GNU_SOURCE $(INCLUDES)
++CXXFLAGS_REL += -DVOMP_HAS_EXIT -DVOMP_PLATTFORM_RASPBERRY -D__STDC_CONSTANT_MACROS -O3 -Wall -Wshadow  -D_GNU_SOURCE $(INCLUDES)
++
++ELDFLAGS = -Wall -Wl,--format=binary -Wl,fonts/sourcesans.ttf -Wl,other/vdrhires.jpg -Wl,other/wallpaper720p.jpg -Wl,--format=default
++LIBS  = -lpthread -lvchiq_arm -lvcos -lrt -lEGL -lGLESv2 -lopenmaxil -lbcm_host -lavformat -lavcodec -lavutil -lm -lstdc++ -ldl
++LIBS += -lfreetype -lMagick++ -lMagickCore
++
++.PHONY: clean fresh all install strip
++
++default: dev
++fresh:   clean default
++
++vompclient: $(OBJECTS) $(TIOBJECT)
++	$(CC) $(CXXFLAGS) $(ELDFLAGS) $(LIBPATHS) $(RELEASE) -o vompclient $(TIOBJECT) $(OBJECTS) $(CROSSLIBS) $(LIBS)
++
++# A slight hash up
++ticonfig.o:
++	$(CC) $(CXXFLAGS_REL) -c -o ticonfig.o ticonfig.c
++
++strip:
++	$(STRIP) vompclient
++
++install:
++	cp vompclient $(DEST)
++
++install-wmp:
++	rm -f /diskless/nfs/wmvp/vompclient
++	cp vompclient /diskless/nfs/wmvp
++
++install-dev:
++	rm -f /mnt/auto/defiant/diskless/nfs/mvp-dev/vompclient
++	cp vompclient /mnt/auto/defiant/diskless/nfs/mvp-dev
++
++debug:
++	../../gdb/gdb-6.7/gdb/gdb /mnt/auto/defiant/diskless/nfs/mvp/vompclient /mnt/auto/defiant/diskless/nfs/mvp/core.*
++
++debug2:
++	../../gdb/gdb-6.7/gdb/gdb /mnt/auto/defiant/diskless/nfs/mvp-dev/vompclient /mnt/auto/defiant/diskless/nfs/mvp-dev/core.*
++
++dev: CXXFLAGS := $(CXXFLAGS_DEV)
++dev: vompclient
++
++release: CXXFLAGS := $(CXXFLAGS_REL)
++release: clean vompclient strip
++
++deps: Makefile.rpi
++	$(CC) -MM $(INCLUDES) $(OBJECTS:%.o=%.cc) > deps
++
++-include deps
++
++clean:
++	rm -f *.o deps vompclient *~ fonts/*.o fonts/*~
++

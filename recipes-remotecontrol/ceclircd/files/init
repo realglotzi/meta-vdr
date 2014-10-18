@@ -1,0 +1,41 @@
+#! /bin/sh
+### BEGIN INIT INFO
+# Provides:          ceclircd
+# Required-Start:   
+# Required-Stop:     
+# Should-Start:      $syslog
+# Should-Stop:       $syslog
+# Default-Start:     2 3 4 5
+# Default-Stop:      0 1 6
+# Short-Description: Start ceclircd daemon
+### END INIT INFO
+
+DAEMON="/usr/bin/ceclircd"
+NAME="ceclircd"
+DESC="ceclircd"
+
+test -x $DAEMON || exit 0
+
+[ -f /etc/default/$NAME ] && . /etc/default/$NAME
+
+case "$1" in
+  start)
+    echo "Starting $DESC"
+    start-stop-daemon --exec $DAEMON --start --quiet --background --make-pidfile --pidfile=/var/run/ceclircd.pid -- $OPTIONS $EVENTS
+  ;;
+  stop)
+    echo "Stopping $DESC"
+    start-stop-daemon --exec $DAEMON --stop
+  ;;
+  restart|reload|force-reload)
+    echo "Restarting $DESC configuration"
+    start-stop-daemon --exec $DAEMON --stop 
+    start-stop-daemon --exec $DAEMON --start -- $OPTIONS $EVENTS
+  ;;
+  *)
+    echo "Usage: invoke-rc.d $NAME {start|stop|reload|restart|force-reload}"
+    exit 1
+  ;;
+esac
+
+exit 0

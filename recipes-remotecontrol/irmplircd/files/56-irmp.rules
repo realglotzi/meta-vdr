@@ -1,0 +1,1 @@
+SUBSYSTEMS=="usb", ATTRS{product}=="USB IR Remote Receiver", SYMLINK="input/irmp"
