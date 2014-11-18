@@ -9,7 +9,7 @@ inherit gnome binconfig update-rc.d
 INITSCRIPT_NAME = "esound"
 INITSCRIPT_PARAMS = "defaults 20" 
  
-PR = "r3"
+PR = "r4"
 
 SRC_URI = "ftp://ftp.gnome.org/pub/GNOME/sources/esound/0.2/esound-0.2.41.tar.bz2;name=archive \
            file://init \
@@ -25,7 +25,7 @@ EXTRA_OECONF = " \
     --disable-artstest \
 "
 do_configure_prepend() {
-    sed -i -e 's:/usr/include/mme:${STAGING_INCDIR}/mme:g' configure.ac
+    sed -i -e 's:/usr/include/mme:${STAGING_INCDIR}/mme:g' ${S}/configure.ac
 }
 
 do_install_append () {
