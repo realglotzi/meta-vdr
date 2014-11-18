@@ -9,16 +9,10 @@ PR="r0"
 
 S = "${WORKDIR}/git"
 
-ASNEEDED = ""
-
 DEPENDS = " \
 	vdr \
     vdr-font-symbols \
 "
-
-EXTRA_OEMAKE = ' \
-	SDKSTAGE="${STAGING_DIR_HOST}" \
-'
 
 do_install() {
 	oe_runmake DESTDIR=${D} install
