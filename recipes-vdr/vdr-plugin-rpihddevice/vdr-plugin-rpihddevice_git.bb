@@ -3,10 +3,10 @@ LICENSE = "GPLv2"
 LIC_FILES_CHKSUM = "file://COPYING;md5=892f569a555ba9c07a568a7c0c4fa63a"
 COMPATIBLE_MACHINE = "raspberrypi"
 
-SRCREV = "aaacdf7c87413cb52fcdb70937bb25a243a085f2"
+SRCREV = "6a423ad8e04f58d33389128d2322681a512dac18"
 SRC_URI = "git://projects.vdr-developer.org/vdr-plugin-rpihddevice.git"
 
-PR="r0"
+PR="r1"
 
 SRC_URI += " \
 	file://rpihddevice-opt-vc.diff \
@@ -19,6 +19,7 @@ ASNEEDED = ""
 DEPENDS = " \
 	vdr \
 	ffmpeg \
+	freetype \
 	virtual/libgl \
 	virtual/libgles2 \
 	virtual/egl \
