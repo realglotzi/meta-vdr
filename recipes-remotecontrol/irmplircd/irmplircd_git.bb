@@ -4,9 +4,9 @@ LICENSE = "GPLv2"
 
 LIC_FILES_CHKSUM = "file://COPYING;md5=892f569a555ba9c07a568a7c0c4fa63a"
 
-PR = "r0"
+PR = "r1"
 
-SRCREV = "8771c661d9b7cc63fa782cbd7f8d0a05e622a600"
+SRCREV  = "1b72de7d7225c5b3b8a41ae5ec5ab0abb58c210a"
 SRC_URI = "git://github.com/realglotzi/irmplircd.git \
 	   file://init \
            file://56-irmp.rules \
