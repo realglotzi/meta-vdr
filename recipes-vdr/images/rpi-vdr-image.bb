@@ -5,6 +5,7 @@ IMAGE_FEATURES += "package-management ssh-server-dropbear"
 IMAGE_INSTALL += " \
 	kernel-modules \
 	tiny-init \
+	cpufrequtils \
 	procps \
 	console-tools \
 	util-linux \
