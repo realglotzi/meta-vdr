@@ -1,0 +1,257 @@
+diff --git a/satip/satip_config.c b/satip/satip_config.c
+index 8174aff..79c4387 100644
+--- a/satip_config.c
++++ b/satip_config.c
+@@ -495,4 +495,8 @@ void satip_clear_config(t_satip_config* cfg)
+   
+   for ( i=0; i<SATIPCFG_MAX_PIDS; i++)
+     cfg->mod_pid[i]=PID_IGNORE;
++    
++  cfg->signal_strength = -1;
++  cfg->signal_quality = -1;
++  cfg->lock = 0;
+ }
+diff --git a/satip/satip_config.h b/satip/satip_config.h
+index 31d3b08..63fb81e 100644
+--- a/satip_config.h
++++ b/satip_config.h
+@@ -103,7 +103,9 @@ typedef struct satip_config
+   
+   /* delta info for addpids/delpids cmd */
+   unsigned short    mod_pid[SATIPCFG_MAX_PIDS];
+-
++  int		    signal_strength;
++  unsigned short    lock;
++  int		    signal_quality;
+ } t_satip_config;
+ 
+ 
+diff --git a/satip/satip_main.c b/satip/satip_main.c
+index 50f2774..bf59fcd 100644
+--- a/satip_main.c
++++ b/satip_main.c
+@@ -188,7 +188,7 @@ int main(int argc, char** argv)
+       exit(1);
+     }
+ 
+-  srtp  = satip_rtp_new(satip_vtuner_fd(satvt));
++  srtp  = satip_rtp_new(satip_vtuner_fd(satvt), satconf);
+ 
+   pollfds[0].fd=satip_vtuner_fd(satvt);
+   pollfds[0].events = POLLPRI;
+diff --git a/satip/satip_rtp.c b/satip/satip_rtp.c
+index 364d596..a65a50c 100644
+--- a/satip_rtp.c
++++ b/satip_rtp.c
+@@ -29,6 +29,10 @@
+ #include <poll.h>
+ #include <sched.h>
+ 
++#include <linux/dvb/version.h>
++#include <linux/dvb/frontend.h>
++
++#include "satip_config.h"
+ #include "satip_rtp.h"
+ #include "log.h"
+ 
+@@ -47,6 +51,8 @@ typedef struct satip_rtp
+   pthread_t thread;
+ } t_satip_rtp;
+ 
++struct sockaddr_in rtp_inaddr;
++struct sockaddr_in rtcp_inaddr;
+ 
+ 
+ static void rtp_data(unsigned char* buffer,int rx)
+@@ -81,7 +87,25 @@ static void rtp_data(unsigned char* buffer,int rx)
+ 		{
+ 		  snprintf(infobuf,val,"%s",(char*) &buf[4]);
+ 		  infobuf[val]=0;
+-		  DEBUG(MSG_MAIN,"RTCP: app info: %s\n",infobuf);
++
++    		char *s = strdup(infobuf);
++    		char *c = strstr(s, ";tuner=");
++    		if (c)  {
++    		    int value;
++		    c = strstr(c, ",");
++    		    value = atoi(++c);
++		    cfg->signal_strength = (value >= 0) ? (value * 100 / 255) : -1;
++		    c = strstr(c, ",");
++    		    int hasLock = atoi(++c);
++    		    c = strstr(c, ",");
++    		    value = atoi(++c);
++    		    // Scale value to 0-100
++    		    cfg->signal_quality = (hasLock && (value >= 0)) ? (value * 100 / 15) : 0;
++    		    DEBUG(MSG_MAIN, "Has Lock: %d, Signal Strength: %d%, Signal Quality: %d%\n", hasLock, cfg->signal_strength, cfg->signal_quality);
++		    cfg->lock = FE_HAS_LOCK;
++    		}
++    		free(s);
++		DEBUG(MSG_MAIN,"RTCP: app info: %s\n",infobuf);
+ 		}
+ 	    }
+ 
+@@ -99,6 +123,9 @@ static void rtp_data(unsigned char* buffer,int rx)
+ 
+ static void* rtp_receiver(void* param)
+ {    
++  struct sockaddr_in remaddr;
++  socklen_t addrlen = sizeof(remaddr);
++  
+   unsigned char rxbuf[32768];
+   struct pollfd pollfds[2];
+   struct sched_param schedp;
+@@ -111,7 +138,6 @@ static void* rtp_receiver(void* param)
+   else
+     DEBUG(MSG_MAIN,"RTP: Realtime scheduling enabled at prio %d\n",schedp.sched_priority);
+ 
+-
+   pollfds[0].fd = srtp->rtp_socket;
+   pollfds[0].events = POLLIN;
+   pollfds[0].revents = 0;
+@@ -130,10 +156,9 @@ static void* rtp_receiver(void* param)
+ 	  int rx,wr;
+ 	  pollfds[0].revents = 0;
+ 	  
+-	  rx = recv(pollfds[0].fd, rxbuf, 32768,0);	  
+-	  
++	  rx = recvfrom(pollfds[0].fd, rxbuf, 32768,0,(struct sockaddr *)&remaddr, &addrlen); 
+ 	  if ( rx>12 && rxbuf[12] == 0x47 )
+-	    {
++    	    {
+ 	      wr= write(srtp->fd,&rxbuf[12],rx-12);
+ 	      DEBUG(MSG_DATA,"RTP: rd %d  wr %d\n",rx,wr);
+ 	    }
+@@ -144,7 +169,7 @@ static void* rtp_receiver(void* param)
+ 	  int rx;
+ 	  pollfds[1].revents = 0;
+ 	  
+-	  rx=recv(pollfds[1].fd, rxbuf, 32768,0);
++	  rx=recvfrom(pollfds[1].fd, rxbuf, 32768,0,(struct sockaddr *)&remaddr, &addrlen);
+ 	  rtp_data(rxbuf,rx);
+ 	  DEBUG(MSG_DATA,"RTCP: rd %d\n",rx);
+ 	}
+@@ -155,14 +180,19 @@ static void* rtp_receiver(void* param)
+ 
+ 
+ 
+-t_satip_rtp*  satip_rtp_new(int fd)
++t_satip_rtp*  satip_rtp_new(int fd, t_satip_config* satip_cfg)
+ {
+   t_satip_rtp* srtp;
+   int rtp_sock, rtcp_sock;
+   int rtp_port, rtcp_port;
+   struct timespec ts;
+   int attempts=PORT_RANGE/2;
+-  
++
++  cfg = satip_cfg;
++
++  satip_cfg->signal_strength = -1;
++  satip_cfg->lock = 1;
++  satip_cfg->signal_quality = -1;
+ 
+   clock_gettime(CLOCK_REALTIME,&ts);
+ 
+@@ -170,20 +200,18 @@ t_satip_rtp*  satip_rtp_new(int fd)
+ 
+   while ( --attempts > 0 )
+     {
+-      struct sockaddr_in inaddr;
+-
+       rtp_port= PORT_BASE + ( random()% (PORT_RANGE-1) );
+       rtcp_port = rtp_port+1;
+ 
+-      rtp_sock = socket(PF_INET, SOCK_DGRAM, IPPROTO_UDP);
+-      rtcp_sock= socket(PF_INET, SOCK_DGRAM, IPPROTO_UDP);
++      rtp_sock = socket(AF_INET, SOCK_DGRAM, 0);
++      rtcp_sock= socket(AF_INET, SOCK_DGRAM, 0);
+ 
+-      memset(&inaddr, 0, sizeof(inaddr));
+-      inaddr.sin_family = AF_INET;
+-      inaddr.sin_addr.s_addr = htonl(INADDR_ANY);
+-      inaddr.sin_port = htons(rtp_port);
++      memset(&rtp_inaddr, 0, sizeof(rtp_inaddr));
++      rtp_inaddr.sin_family = AF_INET;
++      rtp_inaddr.sin_addr.s_addr = htonl(INADDR_ANY);
++      rtp_inaddr.sin_port = htons(rtp_port);
+ 
+-      if (bind(rtp_sock, (struct sockaddr *) &inaddr, sizeof(inaddr)) < 0) 
++      if (bind(rtp_sock, (struct sockaddr *) &rtp_inaddr, sizeof(rtp_inaddr)) < 0) 
+ 	{
+ 	  close(rtp_sock);
+ 	  close(rtcp_sock);
+@@ -206,12 +234,12 @@ t_satip_rtp*  satip_rtp_new(int fd)
+ #endif
+ 
+ 
+-      memset(&inaddr, 0, sizeof(inaddr));
+-      inaddr.sin_family = AF_INET;
+-      inaddr.sin_addr.s_addr = htonl(INADDR_ANY);
+-      inaddr.sin_port = htons(rtcp_port);
++      memset(&rtcp_inaddr, 0, sizeof(rtcp_inaddr));
++      rtcp_inaddr.sin_family = AF_INET;
++      rtcp_inaddr.sin_addr.s_addr = htonl(INADDR_ANY);
++      rtcp_inaddr.sin_port = htons(rtcp_port);
+       
+-      if (bind(rtcp_sock, (struct sockaddr *) &inaddr, sizeof(inaddr)) < 0) 
++      if (bind(rtcp_sock, (struct sockaddr *) &rtcp_inaddr, sizeof(rtcp_inaddr)) < 0) 
+ 	{
+ 	  close(rtp_sock);
+ 	  close(rtcp_sock);
+diff --git a/satip/satip_rtp.h b/satip/satip_rtp.h
+index cf42f60..2cfa286 100644
+--- a/satip_rtp.h
++++ b/satip_rtp.h
+@@ -23,7 +23,8 @@
+ 
+ struct satip_rtp;
+ 
+-struct satip_rtp*  satip_rtp_new(int fd);
++struct satip_rtp*  satip_rtp_new(int fd, t_satip_config* satip_cfg);
+ int satip_rtp_port(struct satip_rtp* srtp);
+-
++t_satip_config* cfg;
++#define TS_SIZE 188
+ #endif
+diff --git a/satip/satip_vtuner.c b/satip/satip_vtuner.c
+index edec06d..4dab4dd 100644
+--- a/satip_vtuner.c
++++ b/satip_vtuner.c
+@@ -31,6 +31,7 @@
+ 
+ #include "satip_config.h"
+ #include "satip_vtuner.h"
++#include "satip_rtp.h"
+ #include "log.h"
+ 
+ /* from vtunerc_priv.h */
+@@ -319,12 +320,12 @@ void satip_vtuner_event(struct satip_vtuner* vt)
+       
+     case MSG_READ_STATUS:  
+       DEBUG(MSG_MAIN,"MSG_READ_STATUS\n");
+-      msg.body.status =    // tuning ok!
++      msg.body.status = vt->satip_cfg->lock;// tuning ok!
+ 	// FE_HAS_SIGNAL     |
+ 	// FE_HAS_CARRIER    |
+ 	// FE_HAS_VITERBI    |
+ 	// FE_HAS_SYNC       |
+-	FE_HAS_LOCK;
++	//FE_HAS_LOCK;
+       break;
+ 
+     case MSG_READ_BER:
+@@ -334,12 +335,12 @@ void satip_vtuner_event(struct satip_vtuner* vt)
+ 
+     case MSG_READ_SIGNAL_STRENGTH:
+       DEBUG(MSG_MAIN,"MSG_READ_SIGNAL_STRENGTH\n");
+-      msg.body.ss = 50;
++      msg.body.ss = vt->satip_cfg->signal_strength*0xffff/100;
+       break;
+       
+     case MSG_READ_SNR:
+       DEBUG(MSG_MAIN,"MSG_READ_SNR\n");
+-      msg.body.snr = 900; /* ?*/
++      msg.body.snr = vt->satip_cfg->signal_quality*0xffff/100;
+       break;
+     
+     case MSG_READ_UCBLOCKS:
