@@ -6,7 +6,7 @@ LIC_FILES_CHKSUM = "file://COPYING;md5=892f569a555ba9c07a568a7c0c4fa63a"
 PR = "r1"
 
 SRC_URI = "git://github.com/rofafor/vdr-plugin-satip.git"
-SRCREV = "d48fe3bcedd4a2d0b30caa7b958db3fe2b3d5b8c"
+SRCREV = "60a2b1fecfe12618ee76bdd76c7dbcc2dcc72a24"
 
 S = "${WORKDIR}/git"
 
