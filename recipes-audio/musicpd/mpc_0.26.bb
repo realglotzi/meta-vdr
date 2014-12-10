@@ -4,7 +4,7 @@ SECTION = "console/multimedia"
 
 DEPENDS = "virtual/libiconv libmpdclient"
 
-PR = "r3"
+PR = "r4"
 
 LICENSE = "GPLv2"
 LIC_FILES_CHKSUM = "file://COPYING;md5=751419260aa954499f7abaabaa882bbe"
@@ -12,7 +12,7 @@ LIC_FILES_CHKSUM = "file://COPYING;md5=751419260aa954499f7abaabaa882bbe"
 SRC_URI = "http://www.musicpd.org/download/mpc/0/mpc-${PV}.tar.xz \
            file://next_mpd_playlist.sh"
 
-inherit autotools useradd
+inherit autotools useradd pkgconfig
 
 do_install_append() {
     install ${WORKDIR}/next_mpd_playlist.sh ${D}${bindir}
@@ -26,8 +26,8 @@ do_install_append() {
 
 FILES_${PN} += "${localstatedir}/lib/mpd/*"
 
-SRC_URI[md5sum] = "76aec8e973e3c6c131e9e9f2ad8f34c3"
-SRC_URI[sha256sum] = "70cfa4f734a275a3c76df481ec5222872362ed8f58a4175459cae65d66acaf24"
+SRC_URI[md5sum] = "d4f37e7e6b32c804a870192d1eb86199"
+SRC_URI[sha256sum] = "20735f7173cce56bec50c1d8b4633751052dc68365b29a6113206dc1cdc6e242"
 
 USERADD_PACKAGES = "${PN}"
 USERADD_PARAM_${PN} = " \
