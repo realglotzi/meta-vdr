@@ -5,9 +5,9 @@ SECTION = "console/multimedia"
 LICENSE = "GPLv2"
 AUTHOR = "Klaus Schmidinger"
 
-PR = "r0"
+PR = "r1"
 
-SRCREV = "3e4e4454fc01b7bd39eef06f7e02961f7edf8305"
+SRCREV = "2db73975424cf3df972c99af7bdee020aee23c8b"
 SRC_URI = "git://projects.vdr-developer.org/vdr.git"
 
 SRC_URI[md5sum] = "f6916524c302f3209fd0af507ab97387"
