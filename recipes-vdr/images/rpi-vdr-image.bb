@@ -29,6 +29,7 @@ IMAGE_INSTALL += " \
 	vdr-plugin-satip \
 	vdr-plugin-satip-locale-de-de \
 	vdr-plugin-graphlcd-ax206dpf \
+	vdr-plugin-graphlcd-ax206dpf-locale-de-de \
 	vdr-plugin-svdrpservice \
 	vdr-plugin-svdrpservice-locale-de-de \
 	vdr-plugin-remotetimers \
@@ -39,12 +40,15 @@ IMAGE_INSTALL += " \
 	vdr-plugin-neutrinoepg-locale-de-de \
 	vdr-plugin-rpihddevice \
 	vdr-plugin-rpihddevice-locale-de-de \
+	vdr-plugin-skinenigmang \
+	vdr-plugin-skinenigmang-locale-de-de \
 	vdr-plugin-streamdev \
 	vdr-plugin-streamdev-locale-de-de \
 	vdr-plugin-extrecmenu \
 	vdr-plugin-extrecmenu-locale-de-de \
 	vdr-plugin-remote \
-	vdr-plugin-remote-locale-de-de"
+	vdr-plugin-remote-locale-de-de \
+	vdr-plugin-skinenigmang-logos-xpm-hi"
 	
 IMAGE_INSTALL += " glibc-utils \
 	glibc-binaries \
