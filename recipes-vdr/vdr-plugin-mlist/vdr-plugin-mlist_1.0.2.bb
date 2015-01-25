@@ -5,12 +5,12 @@ LIC_FILES_CHKSUM = "file://COPYING;md5=393a5ca445f6965873eca0259a17f833"
 
 PR = "r0"
 
-SRC_URI = "http://www.joachim-wilke.de/downloads/vdr-mlist/vdr-mlist-${PV}.tgz"
+SRC_URI = "https://github.com/jowi24/vdr-mlist/archive/1.0.2.tar.gz"
 
 SRC_URI[md5sum] = "82f240fa8c73f52383444e3e6f477466"                                                                                                                                                  
 SRC_URI[sha256sum] = "41be5daa9f65c3dcb288668458101bbd4f594f05414781395a7dc9c0c72503e1"  
 
-S = "${WORKDIR}/mlist-${PV}"
+S = "${WORKDIR}/vdr-mlist-${PV}"
 
 DEPENDS = "vdr"
 
