@@ -5,13 +5,10 @@ SECTION = "console/multimedia"
 LICENSE = "GPLv2"
 AUTHOR = "Klaus Schmidinger"
 
-PR = "r1"
+PR = "r3"
 
-SRCREV = "2db73975424cf3df972c99af7bdee020aee23c8b"
+SRCREV = "bb4ef3b38022480dc046b63f982e3e9a332d7136"
 SRC_URI = "git://projects.vdr-developer.org/vdr.git"
-
-SRC_URI[md5sum] = "f6916524c302f3209fd0af507ab97387"
-SRC_URI[sha256sum] = "c33c6431726378d5af575d8cfcacd34a50d17334e091dc4a095b6b75bc99b972"
 
 S = "${WORKDIR}/git"
 
@@ -56,6 +53,7 @@ do_configure_append() {
 
 	VIDEODIR = /srv/vdr/video
 	CONFDIR  = ${sysconfdir}/vdr
+	ARGSDIR  = ${sysconfdir}/vdr/conf.d
 	CACHEDIR = /var/cache/vdr
 	EOF
 }
