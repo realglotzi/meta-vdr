@@ -5,12 +5,13 @@ SECTION = "console/multimedia"
 LICENSE = "GPLv2"
 AUTHOR = "Klaus Schmidinger"
 
-PR = "r3"
+# the current version
+PV = "2.1.10"
 
-SRCREV = "bb4ef3b38022480dc046b63f982e3e9a332d7136"
-SRC_URI = "git://projects.vdr-developer.org/vdr.git"
+SRC_URI = "ftp://ftp.tvdr.de/vdr/Developer/${P}.tar.bz2"
 
-S = "${WORKDIR}/git"
+SRC_URI[md5sum] = "889f053463e2720f1ad6517cc19e82f6"
+SRC_URI[sha256sum] = "3a2f8f96586566dc40b7e11c252643957d1e2456914deddea1080240f58d5ad8"
 
 LIC_FILES_CHKSUM = "file://COPYING;md5=892f569a555ba9c07a568a7c0c4fa63a"
 
