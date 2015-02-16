@@ -7,7 +7,7 @@ SRC_URI = "git://projects.vdr-developer.org/vdr-plugin-extrecmenu.git \
            file://vdr-extrec-makefile.patch \
           "
 
-PR="r0"
+PR="r1"
 
 S = "${WORKDIR}/git"
 
@@ -17,6 +17,8 @@ DEPENDS = " \
 	vdr \
     vdr-font-symbols \
 "
+
+CXXFLAGS_append = " -fPIC "
 
 EXTRA_OEMAKE = ' \
 	SDKSTAGE="${STAGING_DIR_HOST}" \

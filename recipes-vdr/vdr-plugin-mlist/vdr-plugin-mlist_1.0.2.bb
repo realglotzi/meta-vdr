@@ -3,7 +3,7 @@ AUTHOR = "Joachim Wilke"
 LICENSE = "GPLv2"
 LIC_FILES_CHKSUM = "file://COPYING;md5=393a5ca445f6965873eca0259a17f833"
 
-PR = "r0"
+PR = "r1"
 
 SRC_URI = "https://github.com/jowi24/vdr-mlist/archive/1.0.2.tar.gz"
 
@@ -13,6 +13,8 @@ SRC_URI[sha256sum] = "41be5daa9f65c3dcb288668458101bbd4f594f05414781395a7dc9c0c7
 S = "${WORKDIR}/vdr-mlist-${PV}"
 
 DEPENDS = "vdr"
+
+CXXFLAGS_append = " -fPIC "
 
 do_install() {
 	oe_runmake DESTDIR=${D} install

@@ -3,7 +3,7 @@ AUTHOR = "Rolf Ahrenberg"
 LICENSE = "GPLv2"
 LIC_FILES_CHKSUM = "file://COPYING;md5=892f569a555ba9c07a568a7c0c4fa63a"
 
-PR = "r0"
+PR = "r1"
 
 SRC_URI = "http://www.saunalahti.fi/~rahrenbe/vdr/femon/files/vdr-femon-${PV}.tgz"
 
@@ -13,6 +13,8 @@ SRC_URI[sha256sum] = "15fd4f26c8b8987b826ced60cbfb77517c028bf5c2536118d63a1a03eb
 S = "${WORKDIR}/femon-${PV}"
 
 DEPENDS = "vdr"
+
+CXXFLAGS_append = " -fPIC "
 
 EXTRA_OEMAKE = ' STRIP=/bin/true '
 

@@ -3,7 +3,7 @@ AUTHOR = "Frank Schmirler"
 LICENSE = "GPLv2"
 LIC_FILES_CHKSUM = "file://COPYING;md5=892f569a555ba9c07a568a7c0c4fa63a"
 
-PR="r0"
+PR="r1"
 
 SRC_URI = "http://vdr.schmirler.de/epgsync/vdr-epgsync-1.0.1.tgz"
 
@@ -13,6 +13,8 @@ SRC_URI[sha256sum] = "b9e57e9c2dbebf20d5d193c84e991ae6e3a941db4b5b45780e239210f3
 S = "${WORKDIR}/epgsync-${PV}"
 
 DEPENDS = "vdr"
+
+CXXFLAGS_append = " -fPIC "
 
 do_install() {
 	oe_runmake DESTDIR=${D} install

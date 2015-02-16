@@ -3,7 +3,7 @@ AUTHOR = "Frank Schmirler"
 LICENSE = "GPLv2"
 LIC_FILES_CHKSUM = "file://COPYING;md5=393a5ca445f6965873eca0259a17f833"
 
-PR="r0"
+PR="r1"
 
 SRC_URI = "http://vdr.schmirler.de/svdrpservice/vdr-svdrpservice-1.0.0.tgz"
 
@@ -13,6 +13,8 @@ SRC_URI[sha256sum] = "c25147163c7abf864ca99d9d4c1a821242f3c4eddb658d8b691edb3f54
 S = "${WORKDIR}/svdrpservice-${PV}"
 
 DEPENDS = "vdr"
+
+CXXFLAGS_append = " -fPIC "
 
 do_install() {
 	oe_runmake DESTDIR=${D} install
