@@ -40,6 +40,8 @@ IMAGE_INSTALL += " \
 	vdr-plugin-neutrinoepg-locale-de-de \
 	vdr-plugin-rpihddevice \
 	vdr-plugin-rpihddevice-locale-de-de \
+	vdr-plugin-skinsoppalusikka \
+	vdr-plugin-skinsoppalusikka-locale-de-de \
 	vdr-plugin-skinenigmang \
 	vdr-plugin-skinenigmang-locale-de-de \
 	vdr-plugin-streamdev \
@@ -48,6 +50,7 @@ IMAGE_INSTALL += " \
 	vdr-plugin-extrecmenu-locale-de-de \
 	vdr-plugin-remote \
 	vdr-plugin-remote-locale-de-de \
+	vdr-plugin-cecremote \
 	vdr-plugin-skinenigmang-logos-xpm-hi"
 	
 IMAGE_INSTALL += " glibc-utils \
