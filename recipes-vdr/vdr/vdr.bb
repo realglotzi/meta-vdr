@@ -6,12 +6,12 @@ LICENSE = "GPLv2"
 AUTHOR = "Klaus Schmidinger"
 
 # the current version
-PV = "2.1.10"
+PV = "2.2.0"
 
-SRC_URI = "ftp://ftp.tvdr.de/vdr/Developer/${P}.tar.bz2"
+SRC_URI = "ftp://ftp.tvdr.de/vdr/${P}.tar.bz2"
 
-SRC_URI[md5sum] = "889f053463e2720f1ad6517cc19e82f6"
-SRC_URI[sha256sum] = "3a2f8f96586566dc40b7e11c252643957d1e2456914deddea1080240f58d5ad8"
+SRC_URI[md5sum] = "8853f64c0fc3d41ffd3b4bfc6f0a14b7"
+SRC_URI[sha256sum] = "7c259e1ed1f39d93d23df1d5d0f85dd2a1fa9ec1dadff79e5833e2ff3ebf6c4e"
 
 LIC_FILES_CHKSUM = "file://COPYING;md5=892f569a555ba9c07a568a7c0c4fa63a"
 
