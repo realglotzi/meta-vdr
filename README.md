@@ -8,6 +8,7 @@ VDR client
 
 The following plugins are available:
 
+* cecremote
 * epgsync
 * extrecmenu
 * femon
@@ -18,6 +19,8 @@ The following plugins are available:
 * remotetimers
 * rpihddevice
 * satip
+* skinenigmang
+* skinsoppalusikka 
 * streamdev
 * svdrpservice
 
