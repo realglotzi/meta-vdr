@@ -3,21 +3,21 @@ AUTHOR = "Rolf Ahrenberg"
 LICENSE = "GPLv2"
 LIC_FILES_CHKSUM = "file://COPYING;md5=892f569a555ba9c07a568a7c0c4fa63a"
 
-PR = "r10"
+PR = "r13"
 
 SRC_URI = "git://github.com/rofafor/vdr-plugin-satip.git"
-SRCREV = "26cd34f965970972b668e02765e31314c6e58d7f"
+SRCREV = "8184a785b7a504f909f1595114bb752d1dd8cb85"
 
 S = "${WORKDIR}/git"
 
 DEPENDS = " \
 	vdr \
 	curl \
-	libtinyxml \
+	pugixml \
 "
 
 EXTRA_OEMAKE = ' \
-	SATIP_USE_TINYXML=1 STRIP=/bin/true \
+	STRIP=/bin/true \
 '
 
 do_install() {
