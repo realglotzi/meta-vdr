@@ -1,12 +1,12 @@
 SUMMARY = "VDR HD output device for Raspberry Pi"
 LICENSE = "GPLv2"
 LIC_FILES_CHKSUM = "file://COPYING;md5=892f569a555ba9c07a568a7c0c4fa63a"
-COMPATIBLE_MACHINE = "raspberrypi"
+COMPATIBLE_MACHINE = "(raspberrypi|raspberrypi2)"
 
-SRCREV = "beb7667ab18ee5231f5d0da1c30b02addafae57e"
+SRCREV = "2bccac5750acf9587bd2174840c439c2a3de2a2f"
 SRC_URI = "git://projects.vdr-developer.org/vdr-plugin-rpihddevice.git"
 
-PR="r6"
+PR="r7"
 
 SRC_URI += " \
 	file://rpihddevice-opt-vc.diff \
