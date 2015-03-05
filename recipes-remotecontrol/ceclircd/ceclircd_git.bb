@@ -2,10 +2,11 @@ DESCRIPTION = "CEC lirc client for the Raspberry Pi"
 SECTION = "multimedia"
 LICENSE = "GPLv2"
 
-LIC_FILES_CHKSUM = "file://COPYING;md5=892f569a555ba9c07a568a7c0c4fa63a"
-DEPENDS = " libcec-rpi log4cplus"
+COMPATIBLE_MACHINE = "(raspberrypi|raspberrypi2)"
 
-PR = "r1"
+LIC_FILES_CHKSUM = "file://COPYING;md5=892f569a555ba9c07a568a7c0c4fa63a"
+
+PR = "r2"
 
 SRCREV = "c4992972c3a23b46bb1a0ba517e3c23ba3a2ec56"
 SRC_URI = "git://github.com/realglotzi/ceclircd.git \
@@ -14,12 +15,12 @@ SRC_URI = "git://github.com/realglotzi/ceclircd.git \
 
 S = "${WORKDIR}/git/src"
 
+DEPENDS = " libcec-rpi log4cplus"
+
 inherit update-rc.d
 
 INITSCRIPT_NAME = "ceclircd"
 INITSCRIPT_PARAMS = "defaults 19" 
-
-COMPATIBLE_MACHINE = "raspberrypi"
 
 ## Install in ${D}
 export DEST = "${D}/usr/bin"
