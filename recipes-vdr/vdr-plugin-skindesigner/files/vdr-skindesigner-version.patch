@@ -1,0 +1,13 @@
+diff --git a/skindesigner.c b/skindesigner.c
+index b641cd8..ca453e6 100644
+--- a/skindesigner.c
++++ b/skindesigner.c
+@@ -19,7 +19,7 @@
+ #endif
+ 
+ 
+-static const char *VERSION        = "0.2.2";
++//static const char *VERSION        = "0.2.2";
+ static const char *DESCRIPTION    = trNOOP("Skin Designer");
+ 
+ class cPluginSkinDesigner : public cPlugin {

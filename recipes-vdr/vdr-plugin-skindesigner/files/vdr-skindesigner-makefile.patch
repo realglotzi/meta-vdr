@@ -1,0 +1,23 @@
+diff --git a/Makefile b/Makefile
+index d2d77aa..aaa65d9 100644
+--- a/Makefile
++++ b/Makefile
+@@ -44,15 +44,16 @@ SOFILE = libvdr-$(PLUGIN).so
+ 
+ ### Includes and Defines and Dependencies:
+ DEFINES += -DPLUGIN_NAME_I18N='"$(PLUGIN)"' $(CONFIG)
+-DEFINES += $(shell xml2-config --cflags)
++#DEFINES += $(shell xml2-config --cflags)
+ DEFINES += -DSCRIPTFOLDER='"$(SKINDESIGNER_SCRIPTDIR)"'
+ 
++INCLUDES += -I$(SDKSTAGE)/usr/include/libxml2
+ INCLUDES += $(shell pkg-config --cflags freetype2 fontconfig)
+ 
+ INCLUDES += $(shell pkg-config --cflags librsvg-2.0 cairo-png) -ljpeg
+ LIBS += $(shell pkg-config --libs librsvg-2.0 cairo-png) -ljpeg
+ 
+-LIBS += $(shell xml2-config --libs)
++LIBS += -lxml2 #$(shell xml2-config --libs)
+ 
+ ### The object files:
+ OBJS = $(PLUGIN).o \
