@@ -6,7 +6,7 @@ SRCREV = "5b5bf594f026fbcba2e31b423b43a2e5e45fd471"
 SRC_URI = "git://projects.vdr-developer.org/vdr-plugin-graphlcd.git;branch=touchcol \
           "
 
-PR="r1"
+PR="r2"
 
 S = "${WORKDIR}/git"
 
@@ -15,7 +15,7 @@ DEPENDS = " \
 	vdr \
 "
 
-CXXFLAGS_append = " -fPIC "
+CXXFLAGS_append = " -fPIC -D_FILE_OFFSET_BITS=64 -D_LARGEFILE_SOURCE -D_LARGEFILE64_SOURCE"
 
 EXTRA_OEMAKE = ' \
 	SDKSTAGE="${STAGING_DIR_HOST}" INCLUDES=-I${STAGING_INCDIR} \

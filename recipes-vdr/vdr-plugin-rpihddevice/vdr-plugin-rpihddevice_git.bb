@@ -3,10 +3,10 @@ LICENSE = "GPLv2"
 LIC_FILES_CHKSUM = "file://COPYING;md5=892f569a555ba9c07a568a7c0c4fa63a"
 COMPATIBLE_MACHINE = "(raspberrypi|raspberrypi2)"
 
-SRCREV = "2bccac5750acf9587bd2174840c439c2a3de2a2f"
+SRCREV = "a730cf32754a7fda6286ba8b1ff6ccaa3124ef4e"
 SRC_URI = "git://projects.vdr-developer.org/vdr-plugin-rpihddevice.git"
 
-PR="r7"
+PR="r10"
 
 SRC_URI += " \
 	file://rpihddevice-opt-vc.diff \
@@ -25,7 +25,7 @@ DEPENDS = " \
 	virtual/egl \
 "
 
-CXXFLAGS_append = " -fPIC "
+CXXFLAGS_append = " -fPIC -D_FILE_OFFSET_BITS=64 -D_LARGEFILE_SOURCE -D_LARGEFILE64_SOURCE"
 
 EXTRA_OEMAKE = ' \
 	SDKSTAGE="${STAGING_DIR_HOST}" \

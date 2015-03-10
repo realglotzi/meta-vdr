@@ -3,7 +3,7 @@ AUTHOR = "Rolf Ahrenberg"
 LICENSE = "GPLv2"
 LIC_FILES_CHKSUM = "file://COPYING;md5=892f569a555ba9c07a568a7c0c4fa63a"
 
-PR = "r0"
+PR = "r1"
 
 SRC_URI = "http://www.saunalahti.fi/~rahrenbe/vdr/soppalusikka/files/vdr-skinsoppalusikka-${PV}.tgz"
 
@@ -14,7 +14,7 @@ S = "${WORKDIR}/skinsoppalusikka-${PV}"
 
 DEPENDS = "vdr vdr-font-symbols"
 
-CXXFLAGS_append = " -fPIC "
+CXXFLAGS_append = " -fPIC -D_FILE_OFFSET_BITS=64 -D_LARGEFILE_SOURCE -D_LARGEFILE64_SOURCE"
 
 EXTRA_OEMAKE = ' STRIP=/bin/true '
 
