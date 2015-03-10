@@ -33,6 +33,8 @@ DEPENDS = " \
 	ncurses \
 "
 
+RDEPENDS_${PN} += "perl"
+
 PLUGINDIR = "${libdir}/vdr"
 
 CFLAGS += "-Wl,--hash-style=gnu -fPIC"
