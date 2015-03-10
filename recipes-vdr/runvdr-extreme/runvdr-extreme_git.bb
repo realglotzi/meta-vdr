@@ -22,6 +22,8 @@ DEPENDS = " \
 	util-linux \
 "
 
+RDEPENDS_${PN} += "bash"
+
 EXTRA_OEMAKE = ' \
 	SDKSTAGE="${STAGING_DIR_HOST}" \
 '
