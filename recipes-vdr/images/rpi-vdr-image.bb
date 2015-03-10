@@ -44,6 +44,11 @@ IMAGE_INSTALL += " \
 	vdr-plugin-skinsoppalusikka-locale-de-de \
 	vdr-plugin-skinenigmang \
 	vdr-plugin-skinenigmang-locale-de-de \
+	vdr-plugin-skinnopacity \
+	vdr-plugin-skinnopacity-locale-de-de \
+	vdr-plugin-skinpearlhd \
+	vdr-plugin-skinpearlhd-locale-de-de \
+	vdr-plugin-skindesigner \
 	vdr-plugin-streamdev \
 	vdr-plugin-streamdev-locale-de-de \
 	vdr-plugin-extrecmenu \
