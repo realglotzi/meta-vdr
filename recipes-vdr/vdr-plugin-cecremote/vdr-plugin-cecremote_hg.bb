@@ -3,9 +3,9 @@ AUTHOR = "Uli Eckhart"
 LICENSE = "GPLv2"
 LIC_FILES_CHKSUM = "file://COPYING;md5=892f569a555ba9c07a568a7c0c4fa63a"
 
-PR = "r1"
+PR = "r4"
 
-SRCREV = "3bb447915fd9461df08ea6d370e82b5fe0bc77bb"
+SRCREV = "1b584d08bc467802cc68541474a6fe4492cf0ca5"
 SRC_URI = "hg://hg.uli-eckhardt.de;module=cecremote;rev=${SRCREV}"
 
 S = "${WORKDIR}/cecremote"
@@ -15,6 +15,8 @@ DEPENDS = " \
 	pugixml \
 	libcec-rpi \
 "
+
+CXXFLAGS_append = " -fPIC -D_FILE_OFFSET_BITS=64 -D_LARGEFILE_SOURCE -D_LARGEFILE64_SOURCE"
 
 EXTRA_OEMAKE = 'INCLUDES=-I${STAGING_INCDIR}/libcec'
 
