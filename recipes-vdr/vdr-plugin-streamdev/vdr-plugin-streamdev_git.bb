@@ -2,27 +2,19 @@ SUMMARY = "VDR streamdev plugin"
 LICENSE = "GPLv2"
 LIC_FILES_CHKSUM = "file://COPYING;md5=b234ee4d69f5fce4486a80fdaf4a4263"
 
-SRCREV = "e8629b5ec6e34abbb8b6dc3e487d65d1c2b1d547"
+SRCREV = "84c6f6b6f363549e88efd01d12df35ae6e336578"
 SRC_URI = "git://projects.vdr-developer.org/vdr-plugin-streamdev.git"
 
-#SRC_URI += " \
-#	file://rpihddevice-opt-vc.diff \
-#"
-
-PR="r1"
+PR="r2"
 
 S = "${WORKDIR}/git"
 
-ASNEEDED = ""
+DEPENDS = " vdr "
 
-DEPENDS = " \
-	vdr \
-"
-
-CXXFLAGS_append = " -fPIC -D_FILE_OFFSET_BITS=64 -D_LARGEFILE_SOURCE -D_LARGEFILE64_SOURCE"
+CFLAGS += "-fPIC -D_FILE_OFFSET_BITS=64 -D_LARGEFILE_SOURCE -D_LARGEFILE64_SOURCE"
 
 EXTRA_OEMAKE = ' \
-	SDKSTAGE="${STAGING_DIR_HOST}" \
+	CFLAGS="${CFLAGS}" \
 '
 
 do_install() {
