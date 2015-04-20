@@ -7,8 +7,8 @@ PR = "r2"
 
 SRC_URI = "https://github.com/jowi24/vdr-mlist/archive/1.0.2.tar.gz"
 
-SRC_URI[md5sum] = "82f240fa8c73f52383444e3e6f477466"                                                                                                                                                  
-SRC_URI[sha256sum] = "41be5daa9f65c3dcb288668458101bbd4f594f05414781395a7dc9c0c72503e1"  
+SRC_URI[md5sum] = "b356bf311309d97960bce879e574c4cb"
+SRC_URI[sha256sum] = "62d069d87f75e32d10eec0d4e37a1a2294d361d244e37e062dc212500bfb49a3"
 
 S = "${WORKDIR}/vdr-mlist-${PV}"
 
