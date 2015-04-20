@@ -1,4 +1,4 @@
 KERNEL=="event[0-9]*", ATTRS{NAME}=="X10 WTI RF receiver", SYMLINK="input/x10"
 KERNEL=="event?", ATTRS{name}=="X10 WTI RF receiver", SYMLINK="input/x10"
 KERNEL=="event[0-9]*", ATTRS{name}=="ATI/X10 RF USB Remote Control", SYMLINK="input/x10"
-ATTRS{name}=="X10 Wireless Technology Inc USB Receiver", SYMLINK="input/x10-2"
+ATTRS{name}=="X10 Wireless Technology Inc USB Receiver", SYMLINK="input/x10"
