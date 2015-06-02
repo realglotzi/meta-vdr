@@ -37,7 +37,8 @@ RDEPENDS_${PN} += "perl"
 
 PLUGINDIR = "${libdir}/vdr"
 
-CFLAGS += "-Wl,--hash-style=gnu -fPIC"
+CXXFLAGS += "-fPIC"
+CFLAGS += "-fPIC"
 
 do_configure_append() {
     cat > Make.config <<-EOF
@@ -61,15 +62,12 @@ do_configure_append() {
 	EOF
 }
 
-# override oe_runmake: the -e in the original ignores Make.config...
-oe_runmake () {
-	bbnote make ${PARALLEL_MAKE} MAKEFLAGS= INCLUDES=-I${STAGING_INCDIR}/freetype2 vdr "$@"
-	make ${PARALLEL_MAKE} MAKEFLAGS= INCLUDES=-I${STAGING_INCDIR}/freetype2 vdr "$@" || die "oe_runmake failed"
+do_compile () {
+	oe_runmake 'DESTDIR=${D}' vdr
 }
 
 do_install () {
 	oe_runmake 'DESTDIR=${D}' install-bin install-i18n install-includes install-pc
-	cp Make.config ${D}${includedir}/vdr
 }
 
 FILES_${PN} = "${bindir}/* ${localstatedir}/cache/vdr ${datadir}/vdr "
