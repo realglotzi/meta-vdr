@@ -1,0 +1,33 @@
+diff --git a/runvdr b/runvdr
+index 4959ae7..21db32e 100755
+--- a/runvdr
++++ b/runvdr
+@@ -819,7 +819,10 @@ BuildCommand || exit 1
+ 
+ # Switch front console
+ 
+-[ -n "$SWITCHTERMINAL" ] && $CHVT $SWITCHTERMINAL
++if [ -n "$SWITCHTERMINAL" ] ; then
++    setterm -clear all -cursor off > "$TERMINAL"
++    $CHVT $SWITCHTERMINAL
++fi
+ 
+ if [ -n "$LANGUAGE" ] ; then
+     LC_ALL="$LANGUAGE"
+@@ -848,7 +851,6 @@ SHORTRUNTIMES=0
+ PROXYFILE=
+ 
+ while (true) do
+-    echo -n "Starting VDR at " ; $DATE
+ 
+     # Trap some signals sent to this script
+     trap "SIG=HUP" SIGHUP
+@@ -864,7 +866,7 @@ while (true) do
+     # Remember start time
+     STARTTIME=`$DATE +%s`
+ 
+-    echo "${VDRCOMMAND[@]}"
++#    echo "${VDRCOMMAND[@]}"
+ 
+     if [ -z "$XSERVER" ] ; then
+         # Run VDR
