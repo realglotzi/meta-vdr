@@ -3,9 +3,9 @@ AUTHOR = "Uli Eckhart"
 LICENSE = "GPLv2"
 LIC_FILES_CHKSUM = "file://COPYING;md5=892f569a555ba9c07a568a7c0c4fa63a"
 
-PR = "r4"
+PR = "r8"
 
-SRCREV = "1b584d08bc467802cc68541474a6fe4492cf0ca5"
+SRCREV = "4a2f17a6f0456ac638d67a3f1f27afb2c1395c4f"
 SRC_URI = "hg://hg.uli-eckhardt.de;module=cecremote;rev=${SRCREV}"
 
 S = "${WORKDIR}/cecremote"
@@ -25,7 +25,7 @@ do_compile_prepend() {
 }
 
 do_install() {
-	oe_runmake DESTDIR=${D} install
+	oe_runmake DESTDIR=${D} install-lib install-i18n
 }
 
 FILES_${PN} += " \
