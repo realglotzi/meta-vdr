@@ -1,7 +1,7 @@
 meta-av-extra
 =============
 
-This is a collection of audio/video bitbake recipes for OpenEmbedded/Yocto Linux. The target platform is RaspberryPi, but any other hardware should also work (except rpihddevice).
+This is a collection of audio and VDR bitbake recipes for OpenEmbedded/Yocto Linux. The target platform is RaspberryPi, but any other hardware should also work (except rpihddevice).
 
 VDR client
 ----------
@@ -19,7 +19,10 @@ The following plugins are available:
 * remotetimers
 * rpihddevice
 * satip
+* skindesigner
 * skinenigmang
+* skinnopacity
+* skinpearlhd
 * skinsoppalusikka 
 * streamdev
 * svdrpservice
