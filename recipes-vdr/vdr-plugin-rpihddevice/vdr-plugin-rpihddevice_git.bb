@@ -3,10 +3,10 @@ LICENSE = "GPLv2"
 LIC_FILES_CHKSUM = "file://COPYING;md5=892f569a555ba9c07a568a7c0c4fa63a"
 COMPATIBLE_MACHINE = "(raspberrypi|raspberrypi2)"
 
-SRCREV = "72aa7f44996934618ea9b6869bcbff252c61f0e8"
+SRCREV = "f688182f1a18f8b02cafdffc868d21b13c2779aa"
 SRC_URI = "git://projects.vdr-developer.org/vdr-plugin-rpihddevice.git"
 
-PR="r12"
+PR="r18"
 
 SRC_URI += " \
 	file://rpihddevice-opt-vc.diff \
