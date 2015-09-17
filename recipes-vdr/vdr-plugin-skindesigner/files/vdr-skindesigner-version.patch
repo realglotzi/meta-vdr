@@ -1,13 +1,12 @@
 diff --git a/skindesigner.c b/skindesigner.c
-index b641cd8..ca453e6 100644
+index fdccca5..6ca21e5 100644
 --- a/skindesigner.c
 +++ b/skindesigner.c
-@@ -19,7 +19,7 @@
+@@ -18,7 +18,7 @@
+ #error "VDR-2.0.0 API version or greater is required!"
  #endif
- 
- 
--static const char *VERSION        = "0.2.2";
-+//static const char *VERSION        = "0.2.2";
+
+-
++#undef VERSION
+ static const char *VERSION        = "0.7.2";
  static const char *DESCRIPTION    = trNOOP("Skin Designer");
- 
- class cPluginSkinDesigner : public cPlugin {

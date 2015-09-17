@@ -1,0 +1,49 @@
+diff --git a/libcore/skinrepo.c b/libcore/skinrepo.c
+index e815421..3b23b2e 100644
+--- a/libcore/skinrepo.c
++++ b/libcore/skinrepo.c
+@@ -43,7 +43,7 @@ void cSkinRepo::Install(string path, string themesPath) {
+     this->themesPath = themesPath;
+     if (repoType == rtGit) {
+ 
+-        command = *cString::sprintf("git clone --depth=1 --progress %s %s", url.c_str(), skinPath.c_str());
++        command = *cString::sprintf("git clone --quiet --depth=1 --progress %s %s", url.c_str(), skinPath.c_str());
+         tempfile = *cString::sprintf("gitclone_%s_%ld.out", name.c_str(), time(0));
+ 
+         dsyslog("skindesigner: installing skin from Git, command: %s, logfile: %s", command.c_str(), tempfile.c_str());
+@@ -57,7 +57,7 @@ void cSkinRepo::Install(string path, string themesPath) {
+             return;
+         string filename = url.substr(hit+1);
+         
+-        command = *cString::sprintf("wget -P /tmp/ %s", url.c_str());
++        command = *cString::sprintf("wget -q -P /tmp/ %s", url.c_str());
+         command2 = *cString::sprintf("unzip /tmp/%s -d %s", filename.c_str(), path.c_str());
+ 
+         dsyslog("skindesigner: installing skin from Zip, command: %s, %s", command.c_str(), command2.c_str());
+@@ -73,7 +73,7 @@ void cSkinRepo::Update(string path) {
+     this->skinPath = path + name;
+     if (repoType == rtGit) {
+ 
+-        command = *cString::sprintf("cd %s; git pull", skinPath.c_str());
++        command = *cString::sprintf("cd %s; git pull --quiet", skinPath.c_str());
+         tempfile = *cString::sprintf("gitpull_%s_%ld.out", name.c_str(), time(0));
+ 
+         dsyslog("skindesigner: updating skin from Git, command: %s, logfile: /tmp/%s", command.c_str(), tempfile.c_str());
+@@ -353,7 +353,7 @@ void cSkinRepos::InitRepoGit(string path) {
+     dsyslog("skindesigner: initiating skin repository %s", path.c_str());
+     CreateFolder(path);
+ 
+-    cString command = cString::sprintf("git clone --depth=1 %s %s", skinRepoUrl.c_str(), path.c_str());
++    cString command = cString::sprintf("git clone --quiet --depth=1 %s %s", skinRepoUrl.c_str(), path.c_str());
+     int result = system (*command);
+     
+     if (result == 0) {
+@@ -365,7 +365,7 @@ void cSkinRepos::InitRepoGit(string path) {
+ 
+ void cSkinRepos::PullRepoGit(string path) {
+     dsyslog("skindesigner: updating skin repository %s", path.c_str());
+-    cString command = *cString::sprintf("cd %s; git pull", path.c_str());
++    cString command = *cString::sprintf("cd %s; git pull --quiet ", path.c_str());
+     int result = system (*command);
+     if (result == 0) {
+         dsyslog("skindesigner: skinrepository successfully updated");

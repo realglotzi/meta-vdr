@@ -1,8 +1,10 @@
 diff --git a/Makefile b/Makefile
-index d2d77aa..aaa65d9 100644
+old mode 100644
+new mode 100755
+index f2c47d5..7dbe492
 --- a/Makefile
 +++ b/Makefile
-@@ -44,15 +44,16 @@ SOFILE = libvdr-$(PLUGIN).so
+@@ -44,14 +44,15 @@ SOFILE = libvdr-$(PLUGIN).so
  
  ### Includes and Defines and Dependencies:
  DEFINES += -DPLUGIN_NAME_I18N='"$(PLUGIN)"' $(CONFIG)
@@ -12,12 +14,11 @@ index d2d77aa..aaa65d9 100644
  
 +INCLUDES += -I$(SDKSTAGE)/usr/include/libxml2
  INCLUDES += $(shell pkg-config --cflags freetype2 fontconfig)
- 
  INCLUDES += $(shell pkg-config --cflags librsvg-2.0 cairo-png) -ljpeg
- LIBS += $(shell pkg-config --libs librsvg-2.0 cairo-png) -ljpeg
  
+ LIBS += $(shell pkg-config --libs librsvg-2.0 cairo-png) -ljpeg
 -LIBS += $(shell xml2-config --libs)
 +LIBS += -lxml2 #$(shell xml2-config --libs)
+ LIBS += $(shell pkg-config --libs libcurl)
  
  ### The object files:
- OBJS = $(PLUGIN).o \
