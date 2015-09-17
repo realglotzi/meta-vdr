@@ -5,6 +5,8 @@ SECTION = "console/multimedia"
 LICENSE = "GPLv2"
 AUTHOR = "Klaus Schmidinger"
 
+PR="r0"
+
 # the current version
 PV = "2.2.0"
 
@@ -20,6 +22,7 @@ SRC_URI_append = " \
 	file://vdr-1.7.21-pluginmissing.patch \
 	file://vdr-1.7.29-menuselection.patch \
 	file://MainMenuHooks-v1_0_3.patch \
+	file://vdr-2.2.0_horizontal_menu.patch \
 "
 
 DEPENDS = " \
