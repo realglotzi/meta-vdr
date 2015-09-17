@@ -5,6 +5,7 @@ IMAGE_FEATURES += "package-management ssh-server-dropbear"
 IMAGE_INSTALL += " \
 	kernel-modules \
 	tiny-init \
+	git \
 	cpufrequtils \
 	procps \
 	console-tools \
@@ -13,8 +14,8 @@ IMAGE_INSTALL += " \
 	ntpclient \
 	tzdata \
 	ttf-bitstream-vera \
+	libcec-rpi \
 	irmplircd \
-	ceclircd \
 	vtunerc \
 	satip-client \
 	graphlcd-base-ax206dpf \
@@ -49,6 +50,7 @@ IMAGE_INSTALL += " \
 	vdr-plugin-skinpearlhd \
 	vdr-plugin-skinpearlhd-locale-de-de \
 	vdr-plugin-skindesigner \
+	vdr-plugin-skindesigner-locale-de-de \
 	vdr-plugin-streamdev \
 	vdr-plugin-streamdev-locale-de-de \
 	vdr-plugin-extrecmenu \
