@@ -14,6 +14,7 @@ IMAGE_INSTALL += " \
 	ntpclient \
 	tzdata \
 	ttf-bitstream-vera \
+	font-opensans \
 	libcec-rpi \
 	irmplircd \
 	vtunerc \
