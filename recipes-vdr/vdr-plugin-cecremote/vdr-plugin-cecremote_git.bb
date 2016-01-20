@@ -3,9 +3,9 @@ AUTHOR = "Uli Eckhart"
 LICENSE = "GPLv2"
 LIC_FILES_CHKSUM = "file://COPYING;md5=892f569a555ba9c07a568a7c0c4fa63a"
 
-PR = "r9"
+PR = "r10"
 
-SRCREV = "0a558113ca583a28a7952fa19961c8dfee85e8c0"
+SRCREV = "974b3de97c299edf3d7f77cc738fec9e52c86f58"
 SRC_URI = "git://git.uli-eckhardt.de/vdr-plugin-cecremote.git;protocol=http"
 
 S = "${WORKDIR}/git"
