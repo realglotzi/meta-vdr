@@ -8,11 +8,10 @@ LIC_FILES_CHKSUM = "file://COPYING;md5=e61fd86f9c947b430126181da2c6c715"
 
 DEPENDS = "udev lockdev userland virtual/libgl libxrandr libxrender p8-platform"
 
-PR="r2"
+PR="r3"
 
-SRCREV = "2f625959a43ac68acce70f4e574b6357fe77a273"
-SRC_URI = "git://github.com/Pulse-Eight/libcec.git \
-           file://rpi.patch"
+SRCREV = "6d68d21243aa92862592435e8396b4280ea46c3f"
+SRC_URI = "git://github.com/Pulse-Eight/libcec.git"
 
 S = "${WORKDIR}/git"
 
