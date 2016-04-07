@@ -1,12 +1,12 @@
 DESCRIPTION = "USB CEC Adaptor communication Library"
 HOMEPAGE = "http://libcec.pulse-eight.com/"
 
-COMPATIBLE_MACHINE = "(raspberrypi|raspberrypi2)"
+COMPATIBLE_MACHINE = "(raspberrypi|raspberrypi2|raspberrypi3)"
 
 LICENSE = "GPLv2+"
 LIC_FILES_CHKSUM = "file://COPYING;md5=e61fd86f9c947b430126181da2c6c715"
 
-DEPENDS = "udev lockdev userland virtual/libgl libxrandr libxrender p8-platform"
+DEPENDS = "udev lockdev userland virtual/libgl p8-platform"
 
 PR="r3"
 
