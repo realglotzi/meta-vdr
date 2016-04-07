@@ -4,20 +4,13 @@ LICENSE = "GPLv2"
 
 LIC_FILES_CHKSUM = "file://COPYING;md5=892f569a555ba9c07a568a7c0c4fa63a"
 
-PR = "r1"
+PR = "r2"
 
-SRCREV  = "d913bb0bcc920ee7efdd36be2d88b1502f1d9c7d"
+SRCREV  = "e64e2a8f7ea1c3931d803b680ba99a3520b63885"
 SRC_URI = "git://github.com/realglotzi/rfidexec.git \
-           file://init \
-           file://99-rfid.rules \
           "
 
 S = "${WORKDIR}/git"
-
-inherit update-rc.d
-
-INITSCRIPT_NAME = "rfidexec"
-INITSCRIPT_PARAMS = "defaults 20" 
 
 ## Install in ${D}
 export DEST = "${D}/usr/bin"
@@ -29,12 +22,12 @@ do_install() {
 	install -d ${D}${bindir}/
 	install -m 0755 ${S}/rfidexec  ${D}${bindir}/ 
 	
-	install -d ${D}${sysconfdir}/init.d
-	install -m 0755 ${WORKDIR}/init ${D}${sysconfdir}/init.d/rfidexec
+	install -d ${D}${systemd_unitdir}/system
+	install -m 0755 ${S}/scripts/rfidexec.service ${D}${systemd_unitdir}/system
 
 	install -d ${D}${sysconfdir}/udev/rules.d	
-	install -m 0755 ${WORKDIR}/99-rfid.rules ${D}${sysconfdir}/udev/rules.d
+	install -m 0755 ${S}/scripts/99-rfid.rules ${D}${sysconfdir}/udev/rules.d
 	
 }
 
-FILES_${PN} = "${bindir}/rfidexec ${sysconfdir}/init.d/rfidexec ${sysconfdir}/udev/rules.d/99-rfid.rules"
+FILES_${PN} = "${bindir}/rfidexec ${systemd_unitdir}/system/rfidexec.service ${sysconfdir}/udev/rules.d/99-rfid.rules"
