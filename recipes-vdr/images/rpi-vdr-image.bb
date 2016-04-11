@@ -4,23 +4,18 @@ IMAGE_FEATURES += "package-management ssh-server-dropbear"
 
 IMAGE_INSTALL += " \
 	kernel-modules \
-	tiny-init \
 	git \
 	cpufrequtils \
 	procps \
 	console-tools \
 	util-linux \
 	nfs-utils \
-	ntpclient \
 	tzdata \
 	ttf-bitstream-vera \
 	font-opensans \
 	libcec-rpi \
 	irmplircd \
-	vtunerc \
-	satip-client \
 	graphlcd-base-ax206dpf \
-	runvdr-extreme \
 	vdr-font-symbols \
 	vdr \
 	vdr-locale-de-de \
