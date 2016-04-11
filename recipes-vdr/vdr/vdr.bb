@@ -5,7 +5,7 @@ SECTION = "console/multimedia"
 LICENSE = "GPLv2"
 AUTHOR = "Klaus Schmidinger"
 
-PR="r0"
+PR="r2"
 
 # the current version
 PV = "2.2.0"
@@ -18,12 +18,15 @@ SRC_URI[sha256sum] = "7c259e1ed1f39d93d23df1d5d0f85dd2a1fa9ec1dadff79e5833e2ff3e
 LIC_FILES_CHKSUM = "file://COPYING;md5=892f569a555ba9c07a568a7c0c4fa63a"
 
 SRC_URI_append = " \
+        file://vdr.service \
 	file://remotetimers.patch \
 	file://vdr-1.7.21-pluginmissing.patch \
 	file://vdr-1.7.29-menuselection.patch \
 	file://MainMenuHooks-v1_0_3.patch \
 	file://vdr-2.2.0_horizontal_menu.patch \
 "
+
+inherit systemd
 
 DEPENDS = " \
 	fontconfig \
@@ -40,8 +43,8 @@ RDEPENDS_${PN} += "perl"
 
 PLUGINDIR = "${libdir}/vdr"
 
-CXXFLAGS += "-fPIC"
-CFLAGS += "-fPIC"
+CXXFLAGS = "-fPIC"
+CFLAGS = "-fPIC"
 
 do_configure_append() {
     cat > Make.config <<-EOF
@@ -71,9 +74,17 @@ do_compile () {
 
 do_install () {
 	oe_runmake 'DESTDIR=${D}' install-bin install-i18n install-includes install-pc
+
+	install -d ${D}${systemd_unitdir}/system
+	install -m 0644 ${WORKDIR}/vdr.service ${D}${systemd_unitdir}/system
 }
 
-FILES_${PN} = "${bindir}/* ${localstatedir}/cache/vdr ${datadir}/vdr "
+SYSTEMD_SERVICE_${PN} = "vdr.service" 
+RPROVIDES_${PN} += "${PN}-systemd"
+RREPLACES_${PN} += "${PN}-systemd"
+RCONFLICTS_${PN} += "${PN}-systemd"
+
+FILES_${PN} = "${bindir}/* ${localstatedir}/cache/vdr ${datadir}/vdr ${systemd_unitdir}/system/vdr.service"
 
 FILES_${PN}-dbg += "${PLUGINDIR}/.debug/*"
 
