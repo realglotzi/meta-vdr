@@ -1,0 +1,10 @@
+[Unit]
+Description=Video Disk Recorder
+After=network.target 
+
+[Service]
+ExecStart=/usr/bin/runvdr-extreme -C /etc/runvdr/runvdr.conf
+KillMode=process
+
+[Install]
+WantedBy=multi-user.target
