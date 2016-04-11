@@ -1,7 +1,7 @@
-diff --git a/libcore/skinrepo.c b/libcore/skinrepo.c
+diff --git a/extensions/skinrepo.c b/extensions/skinrepo.c
 index e815421..3b23b2e 100644
---- a/libcore/skinrepo.c
-+++ b/libcore/skinrepo.c
+--- a/extensions/skinrepo.c
++++ b/extensions/skinrepo.c
 @@ -43,7 +43,7 @@ void cSkinRepo::Install(string path, string themesPath) {
      this->themesPath = themesPath;
      if (repoType == rtGit) {

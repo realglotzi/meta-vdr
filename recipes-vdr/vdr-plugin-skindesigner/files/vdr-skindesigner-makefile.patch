@@ -1,16 +1,24 @@
 diff --git a/Makefile b/Makefile
-old mode 100644
-new mode 100755
-index f2c47d5..7dbe492
+index 807a054..426d0ce 100644
 --- a/Makefile
 +++ b/Makefile
-@@ -44,14 +44,15 @@ SOFILE = libvdr-$(PLUGIN).so
+@@ -5,7 +5,7 @@
+ 
+ # Config
+ CONFIG := #-DDOPROFILE			# enable profiling code
+-CONFIG += -DUSE_SKININSTALLER	# use skin installer in skindesigner setup
++#CONFIG += -DUSE_SKININSTALLER	# use skin installer in skindesigner setup
+ 
+ # The official name of this plugin.
+ PLUGIN = skindesigner
+@@ -45,15 +45,16 @@ SOFILE = libvdr-$(PLUGIN).so
  
  ### Includes and Defines and Dependencies:
  DEFINES += -DPLUGIN_NAME_I18N='"$(PLUGIN)"' $(CONFIG)
 -DEFINES += $(shell xml2-config --cflags)
 +#DEFINES += $(shell xml2-config --cflags)
  DEFINES += -DSCRIPTFOLDER='"$(SKINDESIGNER_SCRIPTDIR)"'
+ DEFINES += -D__STL_CONFIG_H
  
 +INCLUDES += -I$(SDKSTAGE)/usr/include/libxml2
  INCLUDES += $(shell pkg-config --cflags freetype2 fontconfig)
