@@ -1,2 +1,0 @@
-SUBSYSTEMS=="usb", ATTRS{product}=="SYC ID&IC USB Reader", SYMLINK="input/rfid"
-KERNEL=="event[0-9]*", ATTRS{NAME}=="SYC ID&IC USB Reader", SYMLINK="input/rfid"
