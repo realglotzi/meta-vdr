@@ -1,7 +1,7 @@
-meta-av-extra
+meta-vdr
 =============
 
-This is a collection of audio and VDR bitbake recipes for OpenEmbedded/Yocto Linux. The target platform is RaspberryPi, but any other hardware should also work (except rpihddevice).
+This is a collection of VDR bitbake recipes for OpenEmbedded/Yocto Linux. The target platform is RaspberryPi, but any other hardware should also work (except rpihddevice plugin).
 
 VDR client
 ----------
@@ -27,9 +27,3 @@ The following plugins are available:
 * streamdev
 * svdrpservice
 
-Audio client
-------------
-
-* MusicPlayerDaemon - MPD
-* Enlightened Sound Daemon - esound 
-* RoarAudio
