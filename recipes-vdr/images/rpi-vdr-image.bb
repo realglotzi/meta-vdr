@@ -4,7 +4,6 @@ IMAGE_FEATURES += "package-management ssh-server-dropbear"
 
 IMAGE_INSTALL += " \
 	kernel-modules \
-	git \
 	cpufrequtils \
 	procps \
 	console-tools \
