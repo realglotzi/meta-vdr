@@ -5,10 +5,10 @@ LIC_FILES_CHKSUM = "file://LICENSE.txt;md5=d273d63619c9aeaf15cdaf76422c4f87"
 
 SRC_URI = " http://www.google.com/fonts/download?kit=3hvsV99qyKCBS55e5pvb3ltkqrIMaAZWyLYEoB48lSQ;downloadfilename=open-sans-fonts.zip"
 
-PR="r0"
+PR="r1"
 
-SRC_URI[md5sum] = "7367b280dd544890fae3ed7c875dc4fd"
-SRC_URI[sha256sum] = "be87c6c9df82d5ec03adc225595e4ef60f1a5fc2a194f0afce0fe21fa4af6520"
+SRC_URI[md5sum] = "1ee77536f01277a6826cc7bb87433160"
+SRC_URI[sha256sum] = "b1e0925c81122343c10b4bd4f7406120394eee5203748a6ce9693e68780d090a"
 
 S = "${WORKDIR}"
 
