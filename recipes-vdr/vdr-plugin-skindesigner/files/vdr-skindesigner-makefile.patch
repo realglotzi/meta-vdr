@@ -1,13 +1,13 @@
 diff --git a/Makefile b/Makefile
-index 807a054..426d0ce 100644
+index 2643049..6fe3b8b 100644
 --- a/Makefile
 +++ b/Makefile
 @@ -5,7 +5,7 @@
  
  # Config
- CONFIG := #-DDOPROFILE			# enable profiling code
--CONFIG += -DUSE_SKININSTALLER	# use skin installer in skindesigner setup
-+#CONFIG += -DUSE_SKININSTALLER	# use skin installer in skindesigner setup
+ CONFIG := #-DDOPROFILE			        # enable profiling code
+-CONFIG += #-DDO_NOT_USE_SKININSTALLER	# disable installer in skindesigner setup
++CONFIG += -DDO_NOT_USE_SKININSTALLER	# disable installer in skindesigner setup
  
  # The official name of this plugin.
  PLUGIN = skindesigner

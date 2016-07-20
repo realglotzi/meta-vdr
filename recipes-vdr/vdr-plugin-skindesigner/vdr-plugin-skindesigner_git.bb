@@ -2,12 +2,11 @@ SUMMARY = "VDR skindesigner plugin"
 LICENSE = "GPLv2" 
 LIC_FILES_CHKSUM = "file://COPYING;md5=892f569a555ba9c07a568a7c0c4fa63a"
 
-SRCREV = "53530335ae9f772c584d1141b223c5e6e7ae9592"
+SRCREV = "4f3c24df7b82530b28b54db0cb9869a001527624"
 SRC_URI = "git://projects.vdr-developer.org/git/vdr-plugin-skindesigner.git;protocol=http \
-           file://vdr-skindesigner-quiet.patch \
            file://vdr-skindesigner-makefile.patch \
            file://vdr-skindesigner-version.patch"
-PR="r14"
+PR="r19"
 
 S = "${WORKDIR}/git"
 
@@ -23,8 +22,6 @@ DEPENDS = " \
 "
 
 RDEPENDS_${PN} += "bash"
-
-CXXFLAGS_append = " -fPIC -D_FILE_OFFSET_BITS=64 -D_LARGEFILE_SOURCE -D_LARGEFILE64_SOURCE"
 
 EXTRA_OEMAKE = ' \
 	SDKSTAGE="${STAGING_DIR_HOST}" \
