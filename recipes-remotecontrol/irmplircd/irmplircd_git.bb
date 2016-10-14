@@ -4,7 +4,7 @@ LICENSE = "GPLv2"
 
 LIC_FILES_CHKSUM = "file://COPYING;md5=892f569a555ba9c07a568a7c0c4fa63a"
 
-PR = "r3"
+PR = "r4"
 
 SRCREV  = "813b03609f24054792deed1274f07d4da4d9b7bd"
 SRC_URI = "git://github.com/realglotzi/irmplircd.git \
@@ -20,6 +20,7 @@ inherit systemd
 export DEST = "${D}/usr/bin"
 
 EXTRA_OEMAKE = "CFLAGS=-Ic_hashmap"	
+TARGET_CC_ARCH += "${LDFLAGS}"
 
 do_install() {
 
