@@ -6,7 +6,7 @@ SRCREV = "f593ad572046998285e01ee0f5f767f88e25a94a"
 SRC_URI = "git://projects.vdr-developer.org/skin-nopacity.git \
           "
 
-PR="r0"
+PR="r1"
 
 S = "${WORKDIR}/git"
 
@@ -14,7 +14,7 @@ ASNEEDED = ""
 
 DEPENDS = " \
 	freetype \
-	imagemagick \
+	imagemagick6 \
 	vdr \
 	vdr-font-symbols \
 "

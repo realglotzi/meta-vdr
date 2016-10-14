@@ -7,7 +7,7 @@ SRC_URI = "git://projects.vdr-developer.org/vdr-plugin-skinenigmang.git \
            file://vdr-skinenigmang-makefile.patch \
           "
 
-PR="r2"
+PR="r4"
 
 S = "${WORKDIR}/git"
 
@@ -15,12 +15,12 @@ ASNEEDED = ""
 
 DEPENDS = " \
 	freetype \
-	imagemagick \
+	imagemagick6 \
 	vdr \
 	vdr-font-symbols \
 "
 
-EXTRA_OEMAKE = "DESTDIR=\"${D}\" 'INCLUDES=-I${STAGING_INCDIR}/freetype2 -I${STAGING_INCDIR}/ImageMagick-6 -I${S}' LIBS=-L${STAGING_LIBDIR} 'LDFLAGS=-lfreetype -lMagick++-6.Q16' HAVE_IMAGEMAGICK=1"
+EXTRA_OEMAKE = "DESTDIR=\"${D}\" 'INCLUDES=-I${STAGING_INCDIR}/freetype2 -I${STAGING_INCDIR}/ImageMagick-6 -I${S}' LIBS=-L${STAGING_LIBDIR} HAVE_IMAGEMAGICK=1"
 
 do_install() {
 	oe_runmake DESTDIR=${D} install

@@ -6,7 +6,7 @@ SRCREV = "9899940a4920e77d1d6c14a3b1bb16be47f5045d"
 SRC_URI = "git://projects.vdr-developer.org/vdr-plugin-skinpearlhd.git \
           "
 
-PR="r0"
+PR="r1"
 
 S = "${WORKDIR}/git"
 
@@ -14,14 +14,14 @@ ASNEEDED = ""
 
 DEPENDS = " \
 	freetype \
-	imagemagick \
+	imagemagick6 \
 	vdr \
 	vdr-font-symbols \
 "
 
 CXXFLAGS_append = " -fPIC -D_FILE_OFFSET_BITS=64 -D_LARGEFILE_SOURCE -D_LARGEFILE64_SOURCE"
 
-EXTRA_OEMAKE = "DESTDIR=\"${D}\" 'INCLUDES=-I${STAGING_INCDIR}/freetype2 -I${STAGING_INCDIR}/ImageMagick-6 -I${S}' LIBS=-L${STAGING_LIBDIR} 'LDFLAGS=-lfreetype -lMagick++-6.Q16' "
+EXTRA_OEMAKE = "DESTDIR=\"${D}\" 'INCLUDES=-I${STAGING_INCDIR}/freetype2 -I${STAGING_INCDIR}/ImageMagick-6 -I${S}' LIBS=-L${STAGING_LIBDIR}" 
 
 do_install() {
 	oe_runmake DESTDIR=${D} install

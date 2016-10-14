@@ -7,15 +7,17 @@ SRC_URI = "git://projects.vdr-developer.org/graphlcd-base.git;branch=touchcol \
            file://remove-legacy-devices.patch \
            file://graphlcd.conf \
           "
-PR="r0"
+PR="r1"
 
 S = "${WORKDIR}/git"
 
 DEPENDS = " \
 	libusb \
 	freetype \
-	imagemagick \
+	imagemagick6 \
 "
+# GNU hash is missing, skip QA
+INSANE_SKIP_${PN} = "ldflags"
 
 EXTRA_OEMAKE = "DESTDIR=\"${D}\" 'INCLUDES=-I${STAGING_INCDIR}/freetype2 -I${STAGING_INCDIR}/ImageMagick-6 -I${S}' LIBS=-L${STAGING_LIBDIR} 'LDFLAGS=-lfreetype -lMagick++-6.Q16 -lusb' HAVE_IMAGEMAGICK=1 HAVE_DRIVER_AX206DPF=1"
 
