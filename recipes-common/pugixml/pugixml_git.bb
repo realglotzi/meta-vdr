@@ -2,15 +2,15 @@ SUMMARY = "Light-weight, simple and fast XML parser for C++ with XPath support"
 HOMEPAGE = "http://pugixml.org"
 LICENSE = "MIT"
 
-LIC_FILES_CHKSUM = "file://${WORKDIR}/git/README.md;beginline=21;md5=b339f086b8738febdd0d31453f927ba9"
+LIC_FILES_CHKSUM = "file://${WORKDIR}/git/README.md;beginline=21;md5=d8c667fced84b09994455e766cbc00fe"
 
-PR = "r1"
+PR = "r2"
 
 SRC_URI = "git://github.com/zeux/pugixml.git"
-SRCREV = "708952d84ebaa1e6c5fa080596bf4a5357789d5d"
+SRCREV = "d3b9e4e1e85d0aca562d0e6b62533e68e5a4a749"
 
 
-S = "${WORKDIR}/git/scripts"
+S = "${WORKDIR}/git"
 
 inherit cmake
 
