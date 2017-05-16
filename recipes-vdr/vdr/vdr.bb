@@ -5,7 +5,7 @@ SECTION = "console/multimedia"
 LICENSE = "GPLv2"
 AUTHOR = "Klaus Schmidinger"
 
-PR="r3"
+PR="r4"
 
 # the current version
 PV = "2.2.0"
@@ -27,7 +27,7 @@ SRC_URI_append = " \
 	file://vdr-2.2.0_horizontal_menu.patch \
 "
 
-inherit systemd
+inherit systemd pkgconfig gettext
 
 DEPENDS = " \
 	fontconfig \
