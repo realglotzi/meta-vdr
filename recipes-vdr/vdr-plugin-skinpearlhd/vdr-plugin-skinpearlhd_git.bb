@@ -6,9 +6,11 @@ SRCREV = "9899940a4920e77d1d6c14a3b1bb16be47f5045d"
 SRC_URI = "git://projects.vdr-developer.org/vdr-plugin-skinpearlhd.git \
           "
 
-PR="r1"
+PR="r2"
 
 S = "${WORKDIR}/git"
+
+inherit pkgconfig gettext
 
 ASNEEDED = ""
 

@@ -7,9 +7,11 @@ SRC_URI = "git://projects.vdr-developer.org/vdr-plugin-extrecmenu.git \
            file://vdr-extrec-makefile.patch \
           "
 
-PR="r2"
+PR="r3"
 
 S = "${WORKDIR}/git"
+
+inherit pkgconfig gettext
 
 ASNEEDED = ""
 

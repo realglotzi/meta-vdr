@@ -6,9 +6,11 @@ SRCREV = "f593ad572046998285e01ee0f5f767f88e25a94a"
 SRC_URI = "git://projects.vdr-developer.org/skin-nopacity.git \
           "
 
-PR="r1"
+PR="r2"
 
 S = "${WORKDIR}/git"
+
+inherit pkgconfig gettext
 
 ASNEEDED = ""
 

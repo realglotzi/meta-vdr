@@ -6,9 +6,11 @@ SRCREV = "c8d54dbe256773e88e714e1cdb7160ca9dc2f927"
 SRC_URI = "git://projects.vdr-developer.org/git/vdr-plugin-skindesigner.git;protocol=http \
            file://vdr-skindesigner-makefile.patch \
            file://vdr-skindesigner-version.patch"
-PR="r21"
+PR="r22"
 
 S = "${WORKDIR}/git"
+
+inherit pkgconfig gettext
 
 DEPENDS = " \
 	cairo \

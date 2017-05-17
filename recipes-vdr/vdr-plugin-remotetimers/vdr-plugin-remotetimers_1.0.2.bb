@@ -3,7 +3,7 @@ AUTHOR = "Frank Schmirler"
 LICENSE = "GPLv2"
 LIC_FILES_CHKSUM = "file://COPYING;md5=892f569a555ba9c07a568a7c0c4fa63a"
 
-PR="r3"
+PR="r4"
 
 SRC_URI = "http://vdr.schmirler.de/remotetimers/vdr-remotetimers-${PV}.tgz"
 
@@ -11,6 +11,8 @@ SRC_URI[md5sum] = "b3e7e8895d5e94362e8375882702cb83"
 SRC_URI[sha256sum] = "cc8916695819f4bb9c02417a31f726e61f2e27da284a70ccefb50ee1e10242f1"  
 
 S = "${WORKDIR}/remotetimers-${PV}"
+
+inherit pkgconfig gettext
 
 DEPENDS = "vdr"
 

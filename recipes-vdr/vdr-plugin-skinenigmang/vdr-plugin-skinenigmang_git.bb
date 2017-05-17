@@ -7,9 +7,11 @@ SRC_URI = "git://projects.vdr-developer.org/vdr-plugin-skinenigmang.git \
            file://vdr-skinenigmang-makefile.patch \
           "
 
-PR="r4"
+PR="r5"
 
 S = "${WORKDIR}/git"
+
+inherit pkgconfig gettext
 
 ASNEEDED = ""
 

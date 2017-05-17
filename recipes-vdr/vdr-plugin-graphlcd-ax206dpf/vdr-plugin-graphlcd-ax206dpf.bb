@@ -6,9 +6,11 @@ SRCREV = "5b5bf594f026fbcba2e31b423b43a2e5e45fd471"
 SRC_URI = "git://projects.vdr-developer.org/vdr-plugin-graphlcd.git;branch=touchcol \
           "
 
-PR="r3"
+PR="r4"
 
 S = "${WORKDIR}/git"
+
+inherit pkgconfig gettext
 
 DEPENDS = " \
 	graphlcd-base-ax206dpf \

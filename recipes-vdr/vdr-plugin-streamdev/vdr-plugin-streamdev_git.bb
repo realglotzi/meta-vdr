@@ -5,9 +5,11 @@ LIC_FILES_CHKSUM = "file://COPYING;md5=b234ee4d69f5fce4486a80fdaf4a4263"
 SRCREV = "84c6f6b6f363549e88efd01d12df35ae6e336578"
 SRC_URI = "git://projects.vdr-developer.org/vdr-plugin-streamdev.git"
 
-PR="r2"
+PR="r3"
 
 S = "${WORKDIR}/git"
+
+inherit pkgconfig gettext
 
 DEPENDS = " vdr "
 

@@ -3,7 +3,7 @@ AUTHOR = "Joachim Wilke"
 LICENSE = "GPLv2"
 LIC_FILES_CHKSUM = "file://COPYING;md5=393a5ca445f6965873eca0259a17f833"
 
-PR = "r2"
+PR = "r3"
 
 SRC_URI = "https://github.com/jowi24/vdr-mlist/archive/1.0.2.tar.gz"
 
@@ -11,6 +11,8 @@ SRC_URI[md5sum] = "b356bf311309d97960bce879e574c4cb"
 SRC_URI[sha256sum] = "62d069d87f75e32d10eec0d4e37a1a2294d361d244e37e062dc212500bfb49a3"
 
 S = "${WORKDIR}/vdr-mlist-${PV}"
+
+inherit pkgconfig gettext
 
 DEPENDS = "vdr"
 
