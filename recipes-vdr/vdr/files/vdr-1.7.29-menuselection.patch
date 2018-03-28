@@ -46,7 +46,7 @@ diff -Nru vdr-1.7.29-vanilla/osdbase.c vdr-1.7.29-menuselection/osdbase.c
 -         if (*s == Key - k1 + '1') {
 +      i = 0;
 +      item_nr = 0;
-+      if (s && (s = skipspace(s)) != '\0' && '0' <= s[i] && s[i] <= '9') {
++      if (s && (s = skipspace(s)) != NULL && '0' <= s[i] && s[i] <= '9') {
 +         do {
 +            item_nr = item_nr * 10 + (s[i] - '0');
 +            }

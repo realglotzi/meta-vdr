@@ -5,7 +5,7 @@ SECTION = "console/multimedia"
 LICENSE = "GPLv2"
 AUTHOR = "Klaus Schmidinger"
 
-PR="r4"
+PR="r5"
 
 # the current version
 PV = "2.2.0"
@@ -19,6 +19,7 @@ LIC_FILES_CHKSUM = "file://COPYING;md5=892f569a555ba9c07a568a7c0c4fa63a"
 
 SRC_URI_append = " \
         file://vdr.service \
+	file://vdr-2.3.2-unsignedtosigned.patch \
 	file://remotetimers.patch \
 	file://vdr-1.7.21-pluginmissing.patch \
 	file://vdr-1.7.29-menuselection.patch \
