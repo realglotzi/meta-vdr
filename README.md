@@ -12,11 +12,10 @@ The following plugins are available:
 * epgsync
 * extrecmenu
 * femon
-* graplcd for ax206dpf compatible display frames
+* graplcd
 * mlist
 * neutrinoepg
 * remote
-* remotetimers
 * rpihddevice
 * satip
 * skindesigner

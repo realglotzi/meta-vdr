@@ -2,10 +2,10 @@ SUMMARY = "VDR neutrinoepg plugin"
 LICENSE = "GPLv2"
 LIC_FILES_CHKSUM = "file://COPYING;md5=892f569a555ba9c07a568a7c0c4fa63a"
 
-SRCREV = "4fec4bcb560d4bd1e81585a0a4dfc7c4f31f6863"
+SRCREV = "714ef7eed5c6284634f65e19a4f5188193e10921"
 SRC_URI = "git://projects.vdr-developer.org/vdr-plugin-neutrinoepg.git"
 
-PR="r3"
+PR="r4"
 
 S = "${WORKDIR}/git"
 

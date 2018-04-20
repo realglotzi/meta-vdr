@@ -7,5 +7,5 @@ index fdccca5..6ca21e5 100644
 
 -
 +#undef VERSION
- static const char *VERSION        = "1.2.3";
+ static const char *VERSION        = "1.2.7";
  static const char *DESCRIPTION    = trNOOP("Skin Designer");

@@ -1,0 +1,83 @@
+diff -rNu graphlcd-base.git.touchcol.orig/glcddrivers/drivers.c graphlcd-base.git.touchcol/glcddrivers/drivers.c
+--- graphlcd-base.git.touchcol.orig/glcddrivers/drivers.c	2014-11-10 21:50:51.558594371 +0100
++++ graphlcd-base.git.touchcol/glcddrivers/drivers.c	2014-11-10 21:55:45.791437123 +0100
+@@ -45,24 +45,6 @@
+ 
+ tDriver drivers[] =
+ {
+-    {"simlcd",        kDriverSimLCD},
+-    {"gu140x32f",     kDriverGU140X32F},
+-    {"gu256x64-372",  kDriverGU256X64_372},
+-    {"gu256x64-3900", kDriverGU256X64_3900},
+-    {"hd61830",       kDriverHD61830},
+-    {"ks0108",        kDriverKS0108},
+-    {"sed1330",       kDriverSED1330},
+-    {"sed1520",       kDriverSED1520},
+-    {"t6963c",        kDriverT6963C},
+-    {"framebuffer",   kDriverFramebuffer},
+-    {"image",         kDriverImage},
+-    {"noritake800",   kDriverNoritake800},
+-    {"avrctl",        kDriverAvrCtl},
+-    {"network",       kDriverNetwork},
+-    {"gu126x64D-K610A4", kDriverGU126X64D_K610A4},
+-    {"dm140gink",     kDriverDM140GINK},
+-    {"serdisp",       kDriverSerDisp},
+-    {"g15daemon",     kDriverG15daemon},
+ #ifdef HAVE_DRIVER_AX206DPF
+     {"ax206dpf",      kDriverAX206DPF},
+ #endif    
+@@ -94,42 +76,6 @@
+ {
+     switch (driverID)
+     {
+-        case kDriverSimLCD:
+-            return new cDriverSimLCD(config);
+-        case kDriverGU140X32F:
+-            return new cDriverGU140X32F(config);
+-        case kDriverGU256X64_372:
+-            return new cDriverGU256X64_372(config);
+-        case kDriverGU256X64_3900:
+-            return new cDriverGU256X64_3900(config);
+-        case kDriverHD61830:
+-            return new cDriverHD61830(config);
+-        case kDriverKS0108:
+-            return new cDriverKS0108(config);
+-        case kDriverSED1330:
+-            return new cDriverSED1330(config);
+-        case kDriverSED1520:
+-            return new cDriverSED1520(config);
+-        case kDriverT6963C:
+-            return new cDriverT6963C(config);
+-        case kDriverFramebuffer:
+-            return new cDriverFramebuffer(config);
+-        case kDriverImage:
+-            return new cDriverImage(config);
+-        case kDriverNoritake800:
+-            return new cDriverNoritake800(config);
+-        case kDriverAvrCtl:
+-            return new cDriverAvrCtl(config);
+-        case kDriverNetwork:
+-            return new cDriverNetwork(config);
+-        case kDriverGU126X64D_K610A4:
+-            return new cDriverGU126X64D_K610A4(config);
+-        case kDriverDM140GINK:
+-            return new cDriverDM140GINK(config);
+-        case kDriverSerDisp:
+-            return new cDriverSerDisp(config);
+-        case kDriverG15daemon:
+-            return new cDriverG15daemon(config);
+ #ifdef HAVE_DRIVER_AX206DPF
+         case kDriverAX206DPF:
+             return new cDriverAX206DPF(config);
+diff -rNu graphlcd-base.git.touchcol.orig/glcddrivers/Makefile graphlcd-base.git.touchcol/glcddrivers/Makefile
+--- graphlcd-base.git.touchcol.orig/glcddrivers/Makefile	2014-11-10 21:50:51.558594371 +0100
++++ graphlcd-base.git.touchcol/glcddrivers/Makefile	2014-11-10 21:57:18.449547200 +0100
+@@ -14,7 +14,7 @@
+ 
+ LIBNAME = $(BASENAME).$(VERMAJOR).$(VERMINOR).$(VERMICRO)
+ 
+-OBJS = common.o config.o driver.o drivers.o port.o simlcd.o framebuffer.o gu140x32f.o gu256x64-372.o gu256x64-3900.o hd61830.o ks0108.o image.o sed1330.o sed1520.o t6963c.o noritake800.o serdisp.o avrctl.o g15daemon.o network.o gu126x64D-K610A4.o dm140gink.o
++OBJS = common.o config.o driver.o drivers.o
+ 
+ HEADERS = config.h driver.h drivers.h
+ 

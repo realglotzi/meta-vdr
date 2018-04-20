@@ -1,7 +1,33 @@
-diff -Nru vdr-1.7.29-vanilla/osdbase.c vdr-1.7.29-menuselection/osdbase.c
---- vdr-1.7.29-vanilla/osdbase.c	2012-07-17 22:37:09.000000000 +0300
-+++ vdr-1.7.29-menuselection/osdbase.c	2012-07-17 22:44:15.000000000 +0300
-@@ -77,6 +77,7 @@
+Description: <short summary of the patch>
+ TODO: Put a short summary on the line above and replace this paragraph
+ with a longer explanation of this change. Complete the meta-information
+ with other relevant fields (see below for details). To make it easier, the
+ information below has been extracted from the changelog. Adjust it or drop
+ it.
+ .
+ vdr (2.3.3-5ckone0~trusty) trusty; urgency=medium
+ .
+   * automatic rebuild
+Author: CKone <ckone-launchpad@arcor.de>
+
+---
+The information above should follow the Patch Tagging Guidelines, please
+checkout http://dep.debian.net/deps/dep3/ to learn about the format. Here
+are templates for supplementary fields that you might want to add:
+
+Origin: <vendor|upstream|other>, <url of original patch>
+Bug: <url in upstream bugtracker>
+Bug-Debian: http://bugs.debian.org/<bugnumber>
+Bug-Ubuntu: https://launchpad.net/bugs/<bugnumber>
+Forwarded: <no|not-needed|url proving that it has been forwarded>
+Reviewed-By: <name and email of someone who approved the patch>
+Last-Update: <YYYY-MM-DD>
+
+Index: vdr-2.3.8/osdbase.c
+===================================================================
+--- vdr-2.3.8.orig/osdbase.c
++++ vdr-2.3.8/osdbase.c
+@@ -83,6 +83,7 @@ cOsdMenu::cOsdMenu(const char *Title, in
  {
    isMenu = true;
    digit = 0;
@@ -9,7 +35,7 @@ diff -Nru vdr-1.7.29-vanilla/osdbase.c vdr-1.7.29-menuselection/osdbase.c
    hasHotkeys = false;
    displayMenuItems = 0;
    title = NULL;
-@@ -126,7 +127,7 @@
+@@ -141,7 +142,7 @@ const char *cOsdMenu::hk(const char *s)
          digit = -1; // prevents automatic hotkeys - input already has them
       if (digit >= 0) {
          digit++;
@@ -18,7 +44,7 @@ diff -Nru vdr-1.7.29-vanilla/osdbase.c vdr-1.7.29-menuselection/osdbase.c
          s = buffer;
          }
       }
-@@ -472,20 +473,60 @@
+@@ -491,20 +492,60 @@ void cOsdMenu::Mark(void)
       }
  }
  
@@ -46,7 +72,7 @@ diff -Nru vdr-1.7.29-vanilla/osdbase.c vdr-1.7.29-menuselection/osdbase.c
 -         if (*s == Key - k1 + '1') {
 +      i = 0;
 +      item_nr = 0;
-+      if (s && (s = skipspace(s)) != NULL && '0' <= s[i] && s[i] <= '9') {
++      if (s && (s = skipspace(s)) != '\0' && '0' <= s[i] && s[i] <= '9') {
 +         do {
 +            item_nr = item_nr * 10 + (s[i] - '0');
 +            }
@@ -82,7 +108,7 @@ diff -Nru vdr-1.7.29-vanilla/osdbase.c vdr-1.7.29-menuselection/osdbase.c
    return osContinue;
  }
  
-@@ -524,8 +565,8 @@
+@@ -545,8 +586,8 @@ eOSState cOsdMenu::ProcessKey(eKeys Key)
          }
       }
    switch (int(Key)) {
@@ -91,12 +117,13 @@ diff -Nru vdr-1.7.29-vanilla/osdbase.c vdr-1.7.29-menuselection/osdbase.c
 +    case kNone:
 +    case k0...k9: return hasHotkeys ? HotKey(Key) : osUnknown;
      case kUp|k_Repeat:
-     case kUp:   CursorUp();   break;
+     case kUp:     if (menuOrientation == moHorizontal) PageUp();     else CursorUp(); break;
      case kDown|k_Repeat:
-diff -Nru vdr-1.7.29-vanilla/osdbase.h vdr-1.7.29-menuselection/osdbase.h
---- vdr-1.7.29-vanilla/osdbase.h	2012-07-17 22:37:09.000000000 +0300
-+++ vdr-1.7.29-menuselection/osdbase.h	2012-07-17 22:44:15.000000000 +0300
-@@ -97,6 +97,8 @@
+Index: vdr-2.3.8/osdbase.h
+===================================================================
+--- vdr-2.3.8.orig/osdbase.h
++++ vdr-2.3.8/osdbase.h
+@@ -101,6 +101,8 @@ private:
    char *status;
    int digit;
    bool hasHotkeys;

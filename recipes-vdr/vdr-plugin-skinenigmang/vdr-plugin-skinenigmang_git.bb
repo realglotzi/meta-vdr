@@ -2,12 +2,13 @@ SUMMARY = "VDR skinenigmang plugin"
 LICENSE = "GPLv2"
 LIC_FILES_CHKSUM = "file://COPYING;md5=b234ee4d69f5fce4486a80fdaf4a4263"
 
-SRCREV = "73b31166140d84bff88152ed99442ea24f3d6052"
+SRCREV = "3362ab0175c8e99375230627e772c1652559d9f4"
 SRC_URI = "git://projects.vdr-developer.org/vdr-plugin-skinenigmang.git \
+           file://skinenigma-2.3.x.patch \
            file://vdr-skinenigmang-makefile.patch \
           "
 
-PR="r5"
+PR="r6"
 
 S = "${WORKDIR}/git"
 

@@ -4,9 +4,10 @@ LIC_FILES_CHKSUM = "file://COPYING;md5=892f569a555ba9c07a568a7c0c4fa63a"
 
 SRCREV = "f593ad572046998285e01ee0f5f767f88e25a94a"
 SRC_URI = "git://projects.vdr-developer.org/skin-nopacity.git \
+          file://vdr_2.4.0_compat.patch \
           "
 
-PR="r2"
+PR="r3"
 
 S = "${WORKDIR}/git"
 

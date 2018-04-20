@@ -1,0 +1,196 @@
+diff -Nur skinnopacity-2017.03.14/displaychannel.c skinnopacity_mod/displaychannel.c
+--- skinnopacity-2017.03.14/displaychannel.c	2017-03-24 10:33:11.000000000 +0100
++++ skinnopacity_mod/displaychannel.c	2017-03-24 10:22:10.000000000 +0100
+@@ -101,7 +101,8 @@
+         }
+         bool recCurrent = false;
+         eTimerMatch TimerMatch = tmNone;
+-        const cTimer *Timer = Timers.GetMatch(Present, &TimerMatch);
++        LOCK_TIMERS_READ;
++		const cTimer *Timer = Timers->GetMatch(Present, &TimerMatch);
+         if (Timer && Timer->Recording()) {
+             recCurrent = true;
+         }
+@@ -183,7 +184,7 @@
+     while (Running()) {
+         uint64_t Now = cTimeMs::Now();
+         cPixmap::Lock();
+-        double t = min(double(Now - Start) / FadeTime, 1.0);
++        double t = std::min(double(Now - Start) / FadeTime, 1.0);
+         int Alpha = t * ALPHA_OPAQUE;
+         channelView->SetAlpha(Alpha);
+         cPixmap::Unlock();
+diff -Nur skinnopacity-2017.03.14/displaychannelview.c skinnopacity_mod/displaychannelview.c
+--- skinnopacity-2017.03.14/displaychannelview.c	2014-05-24 17:17:27.000000000 +0200
++++ skinnopacity_mod/displaychannelview.c	2017-03-24 10:26:16.000000000 +0100
+@@ -627,7 +627,7 @@
+         signalHeight = imgSignal->Height();
+         int signalMeterY = geoManager->channelFooterY +
+                            (geoManager->channelFooterHeight - 2*signalHeight - 5)/2;
+-        int labelWidth = max(fontInfoline->Width(*signalStrength),
++        int labelWidth = std::max(fontInfoline->Width(*signalStrength),
+                              fontInfoline->Width(*signalQuality)) + 2;
+         signalX = geoManager->channelFooterHeight / 2 + labelWidth;
+         pixmapSignalStrength = osd->CreatePixmap(3,
+@@ -779,9 +779,10 @@
+
+ std::string cNopacityDisplayChannelView::GetChannelSep(const cChannel *channel, bool prev) {
+     std::string sepName = "";
+-    const cChannel *sep = prev ? Channels.Prev(channel) :
+-                                 Channels.Next(channel);
+-    for (; sep; (prev)?(sep = Channels.Prev(sep)):(sep = Channels.Next(sep))) {
++    LOCK_CHANNELS_READ;
++	const cChannel *sep = prev ? Channels->Prev(channel) :
++                                 Channels->Next(channel);
++    for (; sep; (prev)?(sep = Channels->Prev(sep)):(sep = Channels->Next(sep))) {
+         if (sep->GroupSep()) {
+             sepName = sep->Name();
+             break;
+@@ -798,7 +799,8 @@
+         channelInfo = cString::sprintf("%s #%d", source->Description(), cDevice::ActualDevice()->DeviceNumber());
+     }
+     if (cRecordControls::Active()) {
+-        cSortedTimers SortedTimers;
++        LOCK_TIMERS_READ;
++		cSortedTimers SortedTimers(Timers);
+         bool first = true;
+         int truncPos = 0;
+         for (int i = 0; i < SortedTimers.Size(); i++)
+diff -Nur skinnopacity-2017.03.14/displaymenu.c skinnopacity_mod/displaymenu.c
+--- skinnopacity-2017.03.14/displaymenu.c	2014-05-24 17:17:27.000000000 +0200
++++ skinnopacity_mod/displaymenu.c	2017-03-24 10:24:44.000000000 +0100
+@@ -100,7 +100,8 @@
+                 drawRemoteTimers = pRemoteTimers->Service("RemoteTimers::RefreshTimers-v1.0", &errorMsg);
+             }
+             timers.Clear();
+-            cSortedTimers SortedTimers;
++			LOCK_TIMERS_READ;
++            cSortedTimers SortedTimers(Timers);
+             //if remotetimers plugin is available, take timers also from him
+             if (drawRemoteTimers) {
+                 cTimer* remoteTimer = NULL;
+@@ -705,7 +706,7 @@
+     if (MenuCategory() == mcMain) {
+         if (config.GetValue("showDiscUsage"))
+             DrawDisk();
+-        bool timersChanged = Timers.Modified(lastTimersState);
++        bool timersChanged = true;
+         int numConflicts = 0;
+         if (config.GetValue("checkTimerConflict"))
+             numConflicts = CheckTimerConflict(timersChanged);
+diff -Nur skinnopacity-2017.03.14/imagecache.c skinnopacity_mod/imagecache.c
+--- skinnopacity-2017.03.14/imagecache.c	2014-05-24 17:17:27.000000000 +0200
++++ skinnopacity_mod/imagecache.c	2017-03-24 10:27:02.000000000 +0100
+@@ -43,7 +43,8 @@
+     //Channel Logos
+     if (config.GetValue("numLogosInitial") > 0) {
+         int channelsCached = 0;
+-        for (const cChannel *channel = Channels.First(); channel; channel = Channels.Next(channel)) {
++		LOCK_CHANNELS_READ;
++        for (const cChannel *channel = Channels->First(); channel; channel = Channels->Next(channel)) {
+             if (channelsCached >= config.GetValue("numLogosInitial"))
+                 break;
+             if (!channel->GroupSep()) {
+diff -Nur skinnopacity-2017.03.14/menudetailview.c skinnopacity_mod/menudetailview.c
+--- skinnopacity-2017.03.14/menudetailview.c	2014-05-24 17:17:27.000000000 +0200
++++ skinnopacity_mod/menudetailview.c	2017-03-24 10:30:45.000000000 +0100
+@@ -66,7 +66,8 @@
+                 dateTime = cString::sprintf("%s  %s - %s (%d %s)", *ev->GetDateString(), *ev->GetTimeString(), *ev->GetEndTimeString(), ev->Duration()/60, tr("min"));
+             }
+             view->SetDateTime(*dateTime);
+-            view->SetChannel(Channels.GetByChannelID(ev->ChannelID(), true));
++            LOCK_CHANNELS_READ;
++			view->SetChannel(Channels->GetByChannelID(ev->ChannelID(), true));
+             view->SetEventID(ev->EventID());
+             break; }
+         case dvRecording: {
+@@ -89,7 +90,8 @@
+                 view->SetTitle(info->Title());
+                 view->SetSubTitle(info->ShortText());
+                 view->SetInfoText(info->Description());
+-                view->SetChannel(Channels.GetByChannelID(info->ChannelID(), true));
++                LOCK_CHANNELS_READ;
++				view->SetChannel(Channels->GetByChannelID(info->ChannelID(), true));
+             } else {
+                 view->SetTitle(rec->Name());
+             }
+@@ -176,7 +178,8 @@
+                     continue;
+                 i++;
+                 sstrReruns  << *DayDateTime(r->event->StartTime());
+-                cChannel *channel = Channels.GetByChannelID(r->event->ChannelID(), true, true);
++                LOCK_CHANNELS_READ;
++				const cChannel *channel = Channels->GetByChannelID(r->event->ChannelID(), true, true);
+                 if (channel) {
+                     sstrReruns << ", " << trVDR("Channel") << " " << channel->Number() << ":";
+                     sstrReruns << " " << channel->ShortName(true);
+@@ -262,7 +265,8 @@
+
+     std::stringstream sstrInfo;
+
+-    cChannel *channel = Channels.GetByChannelID(Info->ChannelID());
++	LOCK_CHANNELS_READ;
++    const cChannel *channel = Channels->GetByChannelID(Info->ChannelID());
+     if (channel)
+         sstrInfo << trVDR("Channel") << ": " << channel->Number() << " - " << channel->Name() << std::endl;
+     if (nRecSize < 0) {
+diff -Nur skinnopacity-2017.03.14/menuitem.c skinnopacity_mod/menuitem.c
+--- skinnopacity-2017.03.14/menuitem.c	2014-05-24 17:17:27.000000000 +0200
++++ skinnopacity_mod/menuitem.c	2017-03-24 10:32:09.000000000 +0100
+@@ -832,10 +832,8 @@
+ }
+
+ void cNopacityChannelMenuItem::readCurrentEPG(void) {
+-    cSchedulesLock schedulesLock;
+-    const cSchedules *schedules = cSchedules::Schedules(schedulesLock);
+-    const cSchedule *Schedule = NULL;
+-	Schedule = schedules->GetSchedule(Channel);
++	LOCK_SCHEDULES_READ;
++    const cSchedule *Schedule = Schedules->GetSchedule(Channel);
+ 	if (!Schedule) {
+ 		strEpgInfo = tr("No EPG Information found");
+         strTimeInfo = "";
+@@ -853,10 +851,8 @@
+
+ std::string cNopacityChannelMenuItem::readEPG(void) {
+     std::stringstream sstrText;
+-    cSchedulesLock schedulesLock;
+-    const cSchedules *schedules = cSchedules::Schedules(schedulesLock);
+-    const cSchedule *Schedule = NULL;
+-	Schedule = schedules->GetSchedule(Channel);
++	LOCK_SCHEDULES_READ;
++    const cSchedule *Schedule = Schedules->GetSchedule(Channel);
+ 	if (!Schedule) {
+ 		sstrText << tr("No EPG Information found");
+ 	} else {
+--- skinnopacity-1.1.3/detailview.c.orig	2018-04-18 15:12:56.363735552 +0200
++++ skinnopacity-1.1.3/detailview.c	2018-04-18 15:14:37.779762193 +0200
+@@ -92,7 +92,7 @@
+     if (channel) {
+         cImage *logo = imgCache->GetLogo(ctLogo, channel);
+         if (logo) {
+-            pixmapHeaderLogo->DrawImage(cPoint(border, max((headerHeight - geoManager->channelLogoHeight - border)/2, 0)), *logo);
++            pixmapHeaderLogo->DrawImage(cPoint(border, std::max((headerHeight - geoManager->channelLogoHeight - border)/2, 0)), *logo);
+             xText += logoWidth + border;
+         }
+     }
+@@ -191,7 +191,7 @@
+     int textLinesFull = wTextFull.Lines();
+     int textHeight = lineHeight * (textLinesTall + textLinesFull) + 2*border;
+     int yText = border;
+-    CreateContent(max(textHeight, imgHeight + 2*border));
++    CreateContent(std::max(textHeight, imgHeight + 2*border));
+     for (int i=0; i < textLinesTall; i++) {
+         pixmapContent->DrawText(cPoint(border, yText), wTextTall.GetLine(i), Theme.Color(clrMenuFontDetailViewText), clrTransparent, font);
+         yText += lineHeight;
+--- skinnopacity-1.1.3/geometrymanager.c.orig   2018-04-18 15:18:13.455811796 +0200
++++ skinnopacity-1.1.3/geometrymanager.c        2018-04-18 15:18:57.405678888 +0200
+@@ -200,7 +200,7 @@
+     replayJumpHeight = replayControlsHeight;
+
+     replayIconBorder = 5;
+-    replayIconSize = min(replayControlsHeight - 2*replayIconBorder, 128);
++    replayIconSize = std::min(replayControlsHeight - 2*replayIconBorder, 128);
+
+     replayMessageY = replayHeight - replayFooterHeight;
+     replayMessageWidth = replayWidth * 75 / 100;

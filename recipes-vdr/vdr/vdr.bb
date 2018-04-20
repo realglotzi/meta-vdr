@@ -5,27 +5,23 @@ SECTION = "console/multimedia"
 LICENSE = "GPLv2"
 AUTHOR = "Klaus Schmidinger"
 
-PR="r5"
+PR="r0"
 
 # the current version
-PV = "2.2.0"
+PV = "2.4.0"
 
 SRC_URI = "ftp://ftp.tvdr.de/vdr/${P}.tar.bz2"
 
-SRC_URI[md5sum] = "8853f64c0fc3d41ffd3b4bfc6f0a14b7"
-SRC_URI[sha256sum] = "7c259e1ed1f39d93d23df1d5d0f85dd2a1fa9ec1dadff79e5833e2ff3ebf6c4e"
+SRC_URI[md5sum] = "12c6a3abeadfa915fcfe736bb047a3ab"
+SRC_URI[sha256sum] = "93af49fe87048073dc38ef5e6c71e9704344d730f21c261afac69e3c937f8cce"
 
 LIC_FILES_CHKSUM = "file://COPYING;md5=892f569a555ba9c07a568a7c0c4fa63a"
 
 SRC_URI_append = " \
         file://vdr.service \
-	file://vdr-2.3.2-unsignedtosigned.patch \
-	file://remotetimers.patch \
-	file://vdr-1.7.21-pluginmissing.patch \
-	file://vdr-1.7.29-menuselection.patch \
 	file://MainMenuHooks-v1_0_3.patch \
-	file://vdr-2.2.0_zapcockpit.patch \
-	file://vdr-2.2.0_horizontal_menu.patch \
+        file://vdr-2.2.0-missing-plugin.patch \
+        file://vdr-2.3.4_zapcockpit.patch \
 "
 
 inherit systemd pkgconfig gettext

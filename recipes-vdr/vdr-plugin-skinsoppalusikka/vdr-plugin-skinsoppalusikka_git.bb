@@ -3,14 +3,12 @@ AUTHOR = "Rolf Ahrenberg"
 LICENSE = "GPLv2"
 LIC_FILES_CHKSUM = "file://COPYING;md5=892f569a555ba9c07a568a7c0c4fa63a"
 
-PR = "r2"
+PR = "r0"
 
-SRC_URI = "http://www.saunalahti.fi/~rahrenbe/vdr/soppalusikka/files/vdr-skinsoppalusikka-${PV}.tgz"
+SRC_URI = "git://github.com/rofafor/vdr-plugin-skinsoppalusikka.git"
+SRCREV  = "0514a3f596b1d773fdf2635d65c9e109d05111ff"
 
-SRC_URI[md5sum] = "061dee76c0d961cdde664474c919532e"
-SRC_URI[sha256sum] = "22a48e228962970f256ae1afe869d5f823be9c4370eaca7eb00db73dcaa98948"
-
-S = "${WORKDIR}/skinsoppalusikka-${PV}"
+S = "${WORKDIR}/git"
 
 inherit pkgconfig gettext
 

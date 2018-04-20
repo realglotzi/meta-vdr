@@ -14,7 +14,7 @@ IMAGE_INSTALL += " \
 	font-opensans \
 	libcec-rpi \
 	irmplircd \
-	graphlcd-base-ax206dpf \
+	graphlcd-base \
 	vdr-font-symbols \
 	vdr \
 	vdr-locale-de-de \
@@ -24,12 +24,10 @@ IMAGE_INSTALL += " \
 	vdr-plugin-femon-locale-de-de \
 	vdr-plugin-satip \
 	vdr-plugin-satip-locale-de-de \
-	vdr-plugin-graphlcd-ax206dpf \
-	vdr-plugin-graphlcd-ax206dpf-locale-de-de \
+	vdr-plugin-graphlcd \
+	vdr-plugin-graphlcd-locale-de-de \
 	vdr-plugin-svdrpservice \
 	vdr-plugin-svdrpservice-locale-de-de \
-	vdr-plugin-remotetimers \
-	vdr-plugin-remotetimers-locale-de-de \
 	vdr-plugin-epgsync \
 	vdr-plugin-epgsync-locale-de-de \
 	vdr-plugin-neutrinoepg \
@@ -42,8 +40,6 @@ IMAGE_INSTALL += " \
 	vdr-plugin-skinenigmang-locale-de-de \
 	vdr-plugin-skinnopacity \
 	vdr-plugin-skinnopacity-locale-de-de \
-	vdr-plugin-skinpearlhd \
-	vdr-plugin-skinpearlhd-locale-de-de \
 	vdr-plugin-skindesigner \
 	vdr-plugin-skindesigner-locale-de-de \
 	vdr-plugin-streamdev \
@@ -53,7 +49,8 @@ IMAGE_INSTALL += " \
 	vdr-plugin-remote \
 	vdr-plugin-remote-locale-de-de \
 	vdr-plugin-cecremote \
-	vdr-plugin-skinenigmang-logos-xpm-hi"
+	vdr-plugin-skinenigmang-logos-xpm-hi \
+        "
 	
 IMAGE_INSTALL += " glibc-utils \
 	glibc-binaries \

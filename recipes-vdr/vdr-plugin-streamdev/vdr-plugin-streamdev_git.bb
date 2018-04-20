@@ -2,10 +2,10 @@ SUMMARY = "VDR streamdev plugin"
 LICENSE = "GPLv2"
 LIC_FILES_CHKSUM = "file://COPYING;md5=b234ee4d69f5fce4486a80fdaf4a4263"
 
-SRCREV = "84c6f6b6f363549e88efd01d12df35ae6e336578"
+SRCREV = "e2a9b979d3fb92967c7a6a8221e674eb7e55c813"
 SRC_URI = "git://projects.vdr-developer.org/vdr-plugin-streamdev.git"
 
-PR="r3"
+PR="r4"
 
 S = "${WORKDIR}/git"
 

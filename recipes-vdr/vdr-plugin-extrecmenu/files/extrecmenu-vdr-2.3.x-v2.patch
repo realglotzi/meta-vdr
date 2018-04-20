@@ -1,0 +1,934 @@
+diff --git a/HISTORY b/HISTORY
+index 6c830f1..332d00c 100644
+--- a/HISTORY
++++ b/HISTORY
+@@ -1,6 +1,10 @@
+ VDR Plugin 'extrecmenu' Revision History
+ ----------------------------------------
+ 
++2018-02-15: Version 1.2.6
++- [kamel5] Shows again Info for cutted recording in recordmenu (vdr-2.3.9+)
++- [kamel5] Fixes for VDR v2.3.x to eliminate screen flickering
++
+ 2015-xx-xx: Version 1.2.5
+ - [amair] Compile under VDR 2.3.1.
+ 
+diff --git a/Makefile b/Makefile
+index 0430080..d16acc6 100644
+--- a/Makefile
++++ b/Makefile
+@@ -6,56 +6,62 @@
+ # The official name of this plugin.
+ # This name will be used in the '-P...' option of VDR to load the plugin.
+ # By default the main source file also carries this name.
+-# IMPORTANT: the presence of this macro is important for the Make.config
+-# file. So it must be defined, even if it is not used here!
+-#
++
+ PLUGIN = extrecmenu
+ 
+ ### The version number of this plugin (taken from the main source file):
+ 
+ VERSION = $(shell grep 'static const char \*VERSION *=' $(PLUGIN).c | awk '{ print $$6 }' | sed -e 's/[";]//g')
+ 
+-### The C++ compiler and options:
+-
+-CXX      ?= g++
+-CXXFLAGS ?= -fPIC -g -O2 -Wall -Woverloaded-virtual -Wno-parentheses
+-
+ ### The directory environment:
+ 
+-VDRDIR = ../../..
+-LIBDIR = ../../lib
+-TMPDIR = /tmp
++# Use package data if installed...otherwise assume we're under the VDR source directory:
++PKGCFG = $(if $(VDRDIR),$(shell pkg-config --variable=$(1) $(VDRDIR)/vdr.pc),$(shell pkg-config --variable=$(1) vdr || pkg-config --variable=$(1) ../../../vdr.pc))
++LIBDIR = $(call PKGCFG,libdir)
++LOCDIR = $(call PKGCFG,locdir)
++PLGCFG = $(call PKGCFG,plgcfg)
++#
++TMPDIR ?= /tmp
+ 
+-### Make sure that necessary options are included:
++### The compiler options:
+ 
+--include $(VDRDIR)/Make.global
++export CFLAGS   = $(call PKGCFG,cflags)
++export CXXFLAGS = $(call PKGCFG,cxxflags)
+ 
+-### Allow user defined options to overwrite defaults:
++### The version number of VDR's plugin API:
+ 
+--include $(VDRDIR)/Make.config
++APIVERSION = $(call PKGCFG,apiversion)
+ 
+-ifdef USE_PINPLUGIN
+-DEFINES += -DUSE_PINPLUGIN
+-endif
+-
+-ifdef EXTRECMENU_USE_VDR_CUTTER
+-DEFINES += -DUSE_VDR_CUTTER
+-endif
+-
+-### The version number of VDR's plugin API (taken from VDR's "config.h"):
++### Allow user defined options to overwrite defaults:
+ 
+-APIVERSION = $(shell sed -ne '/define APIVERSION/s/^.*"\(.*\)".*$$/\1/p' $(VDRDIR)/config.h)
++-include $(PLGCFG)
+ 
+ ### The name of the distribution archive:
+ 
+ ARCHIVE = $(PLUGIN)-$(VERSION)
+ PACKAGE = vdr-$(ARCHIVE)
+ 
++### The name of the shared object file:
++
++SOFILE = libvdr-$(PLUGIN).so
++
+ ### Includes and Defines (add further entries here):
+ 
+-INCLUDES += -I$(VDRDIR)/include
++INCLUDES +=
++
++DEFINES += -DPLUGIN_NAME_I18N='"$(PLUGIN)"'
++
++ifdef USE_GRAPHTFT
++DEFINES += -DUSE_GRAPHTFT
++endif
+ 
+-DEFINES += -D_GNU_SOURCE -DPLUGIN_NAME_I18N='"$(PLUGIN)"'
++ifdef USE_PINPLUGIN
++DEFINES += -DUSE_PINPLUGIN
++endif
++
++ifdef EXTRECMENU_USE_VDR_CUTTER
++DEFINES += -DUSE_VDR_CUTTER
++endif
+ 
+ ### The object files (add further files here):
+ 
+@@ -63,54 +69,59 @@ OBJS = $(PLUGIN).o mymenurecordings.o mymenueditrecording.o myreplaycontrol.o my
+ 
+ ### The main target:
+ 
+-all: libvdr-$(PLUGIN).so i18n
++all: $(SOFILE) i18n
+ 
+ ### Implicit rules:
+ 
+ %.o: %.c
+-	$(CXX) $(CXXFLAGS) -c $(DEFINES) $(INCLUDES) $<
++	$(CXX) $(CXXFLAGS) -c $(DEFINES) $(INCLUDES) -o $@ $<
+ 
+ ### Dependencies:
+ 
+ MAKEDEP = $(CXX) -MM -MG
+ DEPFILE = .dependencies
+ $(DEPFILE): Makefile
+-	@$(MAKEDEP) $(DEFINES) $(INCLUDES) $(OBJS:%.o=%.c) > $@
++	@$(MAKEDEP) $(CXXFLAGS) $(DEFINES) $(INCLUDES) $(OBJS:%.o=%.c) > $@
+ 
+ -include $(DEPFILE)
+ 
+ ### Internationalization (I18N):
+ 
+ PODIR     = po
+-LOCALEDIR = $(VDRDIR)/locale
+ I18Npo    = $(wildcard $(PODIR)/*.po)
+-I18Nmsgs  = $(addprefix $(LOCALEDIR)/, $(addsuffix /LC_MESSAGES/vdr-$(PLUGIN).mo, $(notdir $(foreach file, $(I18Npo), $(basename $(file))))))
++I18Nmo    = $(addsuffix .mo, $(foreach file, $(I18Npo), $(basename $(file))))
++I18Nmsgs  = $(addprefix $(DESTDIR)$(LOCDIR)/, $(addsuffix /LC_MESSAGES/vdr-$(PLUGIN).mo, $(notdir $(foreach file, $(I18Npo), $(basename $(file))))))
+ I18Npot   = $(PODIR)/$(PLUGIN).pot
+ 
+ %.mo: %.po
+ 	msgfmt -c -o $@ $<
+ 
+ $(I18Npot): $(wildcard *.c)
+-	xgettext -C -cTRANSLATORS --no-wrap --no-location -k -ktr -ktrNOOP --msgid-bugs-address='<see README>' -o $@ $^
++	xgettext -C -cTRANSLATORS --no-wrap --no-location -k -ktr -ktrNOOP --package-name=vdr-$(PLUGIN) --package-version=$(VERSION) --msgid-bugs-address='<see README>' -o $@ `ls $^`
+ 
+ %.po: $(I18Npot)
+-	msgmerge -U --no-wrap --no-location --backup=none --no-fuzzy-matching -q $@ $<
++	msgmerge -U --no-wrap --no-location --backup=none -q -N $@ $<
+ 	@touch $@
+ 
+-$(I18Nmsgs): $(LOCALEDIR)/%/LC_MESSAGES/vdr-$(PLUGIN).mo: $(PODIR)/%.mo
+-	@mkdir -p $(dir $@)
+-	cp $< $@
++$(I18Nmsgs): $(DESTDIR)$(LOCDIR)/%/LC_MESSAGES/vdr-$(PLUGIN).mo: $(PODIR)/%.mo
++	install -D -m644 $< $@
+ 
+ .PHONY: i18n
+-i18n: $(I18Nmsgs) $(I18Npot)
++i18n: $(I18Nmo) $(I18Npot)
++
++install-i18n: $(I18Nmsgs)
+ 
+ ### Targets:
+ 
+-libvdr-$(PLUGIN).so: $(OBJS)
+-	$(CXX) $(CXXFLAGS) -shared $(OBJS) -o $@
+-	@cp --remove-destination $@ $(LIBDIR)/$@.$(APIVERSION)
++$(SOFILE): $(OBJS)
++	$(CXX) $(CXXFLAGS) $(LDFLAGS) -shared $(OBJS) -o $@
++
++install-lib: $(SOFILE)
++	install -D $^ $(DESTDIR)$(LIBDIR)/$^.$(APIVERSION)
++
++install: install-lib install-i18n
+ 
+-dist: clean
++dist: $(I18Npo) clean
+ 	@-rm -rf $(TMPDIR)/$(ARCHIVE)
+ 	@mkdir $(TMPDIR)/$(ARCHIVE)
+ 	@cp -a * $(TMPDIR)/$(ARCHIVE)
+@@ -119,4 +130,5 @@ dist: clean
+ 	@echo Distribution package created as $(PACKAGE).tgz
+ 
+ clean:
+-	@-rm -f $(OBJS) $(DEPFILE) *.so *.tgz core* *~ $(PODIR)/*.mo $(PODIR)/*.pot
++	@-rm -f $(PODIR)/*.mo $(PODIR)/*.pot
++	@-rm -f $(OBJS) $(DEPFILE) *.so *.tgz core* *~
+diff --git a/extrecmenu.c b/extrecmenu.c
+index 272b001..520ef03 100644
+--- a/extrecmenu.c
++++ b/extrecmenu.c
+@@ -20,7 +20,7 @@
+ 
+ using namespace std;
+ 
+-static const char *VERSION        = "1.2.5-git";
++static const char *VERSION        = "1.2.6";
+ static const char *DESCRIPTION    = tr("Extended recordings menu");
+ static const char *MAINMENUENTRY  = "ExtRecMenu";
+ 
+@@ -228,6 +228,10 @@ bool cPluginExtrecmenu::SetupParse(const char *_Name,const char *Value)
+     mysetup.RecsPerDir=atoi(Value);
+   else if(!strcasecmp(_Name,"DescendSorting"))
+     mysetup.DescendSorting=atoi(Value);
++#if VDRVERSNUM >= 20301
++  else if(!strcasecmp(_Name,"RecRefreshRate"))
++    mysetup.RecRefreshRate = atoi(Value);
++#endif
+   else if(!strcasecmp(_Name,"GoLastReplayed"))
+     mysetup.GoLastReplayed=atoi(Value);
+   else if(!strcasecmp(_Name,"ReturnToPlugin"))
+diff --git a/mymenueditrecording.c b/mymenueditrecording.c
+index 78b957d..7dc7cec 100644
+--- a/mymenueditrecording.c
++++ b/mymenueditrecording.c
+@@ -256,7 +256,7 @@ void myMenuMoveRecording::Set()
+     Add(new myMenuMoveRecordingItem(tr("[base dir]"),0));
+ 
+ #if VDRVERSNUM >= 20301
+-	LOCK_RECORDINGS_WRITE
++  LOCK_RECORDINGS_WRITE
+   Recordings->Sort();
+ #else
+   cThreadLock RecordingsLock(&Recordings);
+@@ -445,7 +445,7 @@ eOSState myMenuMoveRecording::MoveRec()
+             else
+             {
+ #if VDRVERSNUM >= 20301
+-							LOCK_RECORDINGS_READ
++              LOCK_RECORDINGS_READ
+               for(const cRecording *rec=Recordings->First();rec;rec=Recordings->Next(rec))
+ #else
+               cThreadLock RecordingsLock(&Recordings);
+@@ -626,7 +626,7 @@ bool myMenuRecordingDetails::ModifyInfo(cRecording *Recording, const char *Info)
+ { //This has been taken from remotetimers-0.1.5, written by Frank Schmirler <vdrdev@schmirler.de>
+ 
+ #if VDRVERSNUM > 10713
+-  cString InfoFileName=cString::sprintf(Recording->IsPesRecording()?"%s/"INFOFILE_PES:"%s/"INFOFILE_TS,Recording->FileName());
++  cString InfoFileName = cString::sprintf("%s/%s", Recording->FileName(), Recording->IsPesRecording() ? INFOFILE_PES : INFOFILE_TS);
+ 	FILE *f = fopen(InfoFileName, "a");
+ 	if (f)
+ 	{
+diff --git a/mymenurecordings.c b/mymenurecordings.c
+index 6166983..32f8dec 100644
+--- a/mymenurecordings.c
++++ b/mymenurecordings.c
+@@ -97,7 +97,7 @@ void myMenuRecordingInfo::Display(void)
+       text << tr("Name") << ": " << recname << "\n";
+ 
+ #if VDRVERSNUM >= 20301
+-		LOCK_CHANNELS_READ
++    LOCK_CHANNELS_READ
+     const cChannel *channel=Channels->GetByChannelID(((cRecordingInfo*)recording->Info())->ChannelID());
+ #else
+     cChannel *channel=Channels.GetByChannelID(((cRecordingInfo*)recording->Info())->ChannelID());
+@@ -167,7 +167,11 @@ myMenuRecordingInfo::~myMenuRecordingInfo(void) {
+ }
+ 
+ // --- myMenuRecordingsItem ---------------------------------------------------
++#if VDRVERSNUM >= 20301
++myMenuRecordingsItem::myMenuRecordingsItem(const cRecording *Recording, int Level)
++#else
+ myMenuRecordingsItem::myMenuRecordingsItem(cRecording *Recording,int Level)
++#endif
+ {
+ #if VDRVERSNUM >= 10733
+   recording=Recording;
+@@ -568,12 +572,13 @@ myMenuRecordings::myMenuRecordings(const char *Base,int Level):cOsdMenu("")
+   base=Base?strdup(Base):NULL;
+ 
+ #if VDRVERSNUM >= 20301
+-	//TODO???
++  hadcutterthread = false;
++  counter = 0;
+ #else
+   Recordings.StateChanged(recordingsstate);
+ #endif
+ 
+-  //Display();
++  Display();
+ 
+   if(wasdvd&&!cControl::Control())
+   {
+@@ -634,7 +639,7 @@ int myMenuRecordings::FreeMB()
+   if (lastFreeMB<=0||time(NULL)-lastDiskSpaceCheck>DISKSPACECHEK)
+   {
+     int freediskspace=0;
+-    if(mysetup.FileSystemFreeMB)
++    if (mysetup.FileSystemFreeMB == 2)
+     {
+ #if APIVERSNUM > 20101
+       string path=cVideoDirectory::Name();
+@@ -659,7 +664,7 @@ int myMenuRecordings::FreeMB()
+             freediskspace=int((double)fsstat.f_bavail/(double)(1024.0*1024.0/fsstat.f_bsize));
+ 
+ #if VDRVERSNUM >= 20301
+-						LOCK_DELETEDRECORDINGS_READ
++            LOCK_DELETEDRECORDINGS_READ
+             for(const cRecording *rec=DeletedRecordings->First();rec;rec=DeletedRecordings->Next(rec))
+ #else
+             for(cRecording *rec=DeletedRecordings.First();rec;rec=DeletedRecordings.Next(rec))
+@@ -729,16 +734,16 @@ void myMenuRecordings::Title()
+     buffer << trVDR("Recordings");
+ 
+ #if VDRVERSNUM >= 10728
+-  if(mysetup.SetRecordingCat == 0){
++  if (mysetup.FileSystemFreeMB > 0) {
+ #endif
+     int freemb=FreeMB();
+ #if VDRVERSNUM >= 10727
+-# if VDRVERSNUM >= 20301
+-		LOCK_RECORDINGS_READ
++#if VDRVERSNUM >= 20301
++    LOCK_RECORDINGS_READ
+     double MBperMinute = Recordings->MBperMinute();
+-# else
++#else
+     double MBperMinute = Recordings.MBperMinute();
+-# endif
++#endif
+     int minutes=int(double(freemb)/(MBperMinute>0?MBperMinute:MB_PER_MINUTE));
+ #else
+     int minutes=int(double(freemb)/MB_PER_MINUTE);
+@@ -814,7 +819,9 @@ void myMenuRecordings::Set(bool Refresh)
+   const char *lastreplayed=myReplayControl::LastReplayed();
+ 
+ #if VDRVERSNUM >= 20301
+-	LOCK_RECORDINGS_READ
++  if (cRecordings::GetRecordingsRead(recordingsStateKey)) {
++     recordingsStateKey.Remove();
++     cRecordings *Recordings = cRecordings::GetRecordingsWrite(recordingsStateKey); // write access is necessary for sorting!
+ #else
+   cThreadLock RecordingsLock(&Recordings);
+ #endif
+@@ -823,19 +830,12 @@ void myMenuRecordings::Set(bool Refresh)
+     fsid=0;
+     myMenuRecordingsItem *item=(myMenuRecordingsItem*)Get(Current());
+     if(item)
+-    {
+-#if VDRVERSNUM >= 20301
+-      const cRecording *recording=Recordings->GetByName(item->FileName());
+-#else
+-      cRecording *recording=Recordings.GetByName(item->FileName());
+-#endif
+-      if(recording)
+-        lastreplayed=recording->FileName();
+-    }
++      lastreplayed = item->Recording()->FileName();
+   }
+ 
+   Clear();
+ 
++#if VDRVERSNUM < 20309
+   // create my own recordings list from VDR's
+   myRecList *list=new myRecList();
+ #if VDRVERSNUM >= 20301
+@@ -854,6 +854,7 @@ void myMenuRecordings::Set(bool Refresh)
+   if(base)
+     path+=base;
+   list->Sort(mySortList->Find(path));
++#endif
+ 
+ #ifdef USE_PINPLUGIN
+    bool hidepinprotectedrecs=false;
+@@ -863,9 +864,16 @@ void myMenuRecordings::Set(bool Refresh)
+ #endif
+ 
+   myMenuRecordingsItem *lastitem=NULL;
++#if VDRVERSNUM >= 20309
++  GetRecordingsSortMode(DirectoryName());
++  Recordings->Sort();
++  for(const cRecording *recording=Recordings->First();recording;recording=Recordings->Next(recording))
++  {
++#else
+   for(myRecListItem *listitem=list->First();listitem;listitem=list->Next(listitem))
+   {
+     cRecording *recording=listitem->recording;
++#endif
+     if(!base||(strstr(recording->Name(),base)==recording->Name()&&recording->Name()[strlen(base)]=='~'))
+     {
+       myMenuRecordingsItem *recitem=new myMenuRecordingsItem(recording,level);
+@@ -928,12 +936,21 @@ void myMenuRecordings::Set(bool Refresh)
+       }
+     }
+   }
++#if VDRVERSNUM >= 20309
++  SetMenuSortMode(RecordingsSortMode == rsmName ? msmName : msmTime);
++#else
+   delete list;
++#endif
+ 
+   ForceFreeMbUpdate();
+   Title();
+   if(Refresh)
+     Display();
++#if VDRVERSNUM >= 20301
++  SetHelpKeys();
++  recordingsStateKey.Remove(false); // sorting doesn't count as a real modification
++  }
++#endif
+ }
+ 
+ // returns the corresponding recording to an item
+@@ -950,6 +967,19 @@ cRecording *myMenuRecordings::GetRecording(myMenuRecordingsItem *Item)
+   return recording;
+ }
+ 
++#if VDRVERSNUM >= 20309
++cString myMenuRecordings::DirectoryName(void)
++{
++  cString d(cVideoDirectory::Name());
++  if (base) {
++     char *s = ExchangeChars(strdup(base), true);
++     d = AddDirectory(d, s);
++     free(s);
++     }
++  return d;
++}
++#endif
++
+ // opens a subdirectory
+ bool myMenuRecordings::Open()
+ {
+@@ -1212,7 +1242,7 @@ eOSState myMenuRecordings::Delete()
+           {
+             timer->Skip();
+ #if VDRVERSNUM >= 20301
+-						LOCK_TIMERS_WRITE
++            LOCK_TIMERS_WRITE
+             cRecordControls::Process(Timers,time(NULL));
+ #else
+             cRecordControls::Process(time(NULL));
+@@ -1383,6 +1413,17 @@ eOSState myMenuRecordings::Commands(eKeys Key)
+   return osContinue;
+ }
+ 
++#if VDRVERSNUM >= 20309
++eOSState myMenuRecordings::Sort(void)
++{
++  if (HasSubMenu())
++     return osContinue;
++  IncRecordingsSortMode(DirectoryName());
++  recordingsStateKey.Reset();
++  Set(true);
++  return osContinue;
++}
++#else
+ // change sorting
+ eOSState myMenuRecordings::ChangeSorting()
+ {
+@@ -1401,6 +1442,11 @@ eOSState myMenuRecordings::ChangeSorting()
+     {
+       mySortList->Del(item);
+       mySortList->WriteConfigFile();
++#if VDRVERSNUM >= 20301
++      {
++      LOCK_RECORDINGS_WRITE; // to trigger a state change
++      }
++#endif
+       Set(true);
+ 
+       Skins.Message(mtInfo,tr("Sort by date"),1);
+@@ -1410,15 +1456,26 @@ eOSState myMenuRecordings::ChangeSorting()
+   }
+   mySortList->Add(new SortListItem(path));
+   mySortList->WriteConfigFile();
++#if VDRVERSNUM >= 20301
++  {
++  LOCK_RECORDINGS_WRITE; // to trigger a state change
++  }
++#endif
+   Set(true);
+ 
+   Skins.Message(mtInfo,tr("Sort by name"),1);
+ 
+   return osContinue;
+ }
++#endif
+ 
+ eOSState myMenuRecordings::ProcessKey(eKeys Key)
+ {
++#if VDRVERSNUM >= 20301
++  if (!hadcutterthread && MoveCutterThread->Working())
++     hadcutterthread = true;
++#endif
++
+   eOSState state;
+ 
+   if(edit)
+@@ -1478,7 +1535,7 @@ eOSState myMenuRecordings::ProcessKey(eKeys Key)
+                                 if(Interface->Confirm(tr("Cancel moving?")))
+                                 {
+ #if VDRVERSNUM >= 20301
+-																	LOCK_RECORDINGS_READ
++                                  LOCK_RECORDINGS_READ
+                                   for(const cRecording *rec=Recordings->First();rec;rec=Recordings->Next(rec))
+ #else
+                                   for(cRecording *rec=Recordings.First();rec;rec=Recordings.Next(rec))
+@@ -1535,26 +1592,46 @@ eOSState myMenuRecordings::ProcessKey(eKeys Key)
+         case kInfo:
+         case kBlue: return Info();
+         case k1...k9: return Commands(Key);
++#if VDRVERSNUM >= 20309
++        case k0: return Sort();
++#else
+         case k0: return ChangeSorting();
+-        default: break;
++#endif
++	default: break;
+       }
+     }
++
+ #if VDRVERSNUM >= 20301
+-    //TODO???
+-    Set(true);
++  }
++  if (!HasSubMenu()) {
++//     dsyslog ("%s %s %d !HasSubMenu\n", __FILE__, __func__,  __LINE__);
++     Set(true);
++     if (Key != kNone)
++        SetHelpKeys();
++     }
++  if (hadcutterthread) {
++       if (!MoveCutterThread->Working())
++          hadcutterthread = false;
++       if (!Count())
++          state = osBack;
++       if (mysetup.RecRefreshRate > 0 && counter == mysetup.RecRefreshRate) {
++          counter = 0;
++	  {LOCK_RECORDINGS_WRITE;} // to trigger a state change
++	  Set(true);
++          }
++       counter++;
++       }
+ #else
+     bool stateChanged = Recordings.StateChanged(recordingsstate);
+     if(stateChanged || MoveCutterThread->IsCutterQueueEmpty())
+       Set(true);
+-#endif
+ 
+     if(!Count() && level>0)
+       state=osBack;
+ 
+-#if VDRVERSNUM < 20301
+     if((!HasSubMenu() && Key!=kNone) || stateChanged)
+-#endif
+       SetHelpKeys();
+   }
++#endif
+   return state;
+ }
+diff --git a/mymenurecordings.h b/mymenurecordings.h
+index a882309..a36cb3a 100644
+--- a/mymenurecordings.h
++++ b/mymenurecordings.h
+@@ -4,7 +4,11 @@ class myMenuRecordingsItem:public cOsdItem
+   private:
+ #if VDRVERSNUM >= 10733
+     cRecording *recording_copy;
++#if VDRVERSNUM >= 20301
++    const cRecording *recording;
++#else
+     cRecording *recording;
++#endif
+ #endif
+     bool dirismoving;
+     bool isdvd;
+@@ -17,13 +21,20 @@ class myMenuRecordingsItem:public cOsdItem
+     const char *filename;
+     std::string uniqid; // this is the unique name that identifies a recording
+   public:
++#if VDRVERSNUM >= 20301
++    myMenuRecordingsItem(const cRecording *Recording,int Level);
++#else
+     myMenuRecordingsItem(cRecording *Recording,int Level);
++#endif
+     ~myMenuRecordingsItem();
+     const char *FileName(){return filename;}
+     const char *Name(){return name;}
+ #if VDRVERSNUM >= 10733
+     inline void rec_copy(void);
+ #endif
++//#if VDRVERSNUM >= 20301
++    const cRecording *Recording(void) { return recording; }
++//#endif
+     bool IsDirectory(){return name!=NULL;}
+     bool IsPesRecording(void) const { return isPesRecording; }
+     void IncrementCounter(bool IsNew);
+@@ -51,6 +62,11 @@ class myMenuRecordings:public cOsdMenu
+   int level,helpkeys;
+   int recordingsstate;
+   char *base;
++#if VDRVERSNUM >= 20301
++  cStateKey recordingsStateKey;
++  int counter;
++  bool hadcutterthread;
++#endif
+   bool Open();
+   void SetHelpKeys();
+   void Title();
+@@ -63,8 +79,16 @@ class myMenuRecordings:public cOsdMenu
+   eOSState Info();
+   eOSState Details();
+   eOSState Commands(eKeys Key=kNone);
++#if VDRVERSNUM >= 20309
++  eOSState Sort(void);
++#else
+   eOSState ChangeSorting();
++#endif
+   int FreeMB();
++#if VDRVERSNUM >= 20309
++ protected:
++  cString DirectoryName(void);
++#endif
+  public:
+   myMenuRecordings(const char *Base=NULL,int Level=0);
+   ~myMenuRecordings();
+diff --git a/mymenusetup.c b/mymenusetup.c
+index f8de69e..0dec81a 100644
+--- a/mymenusetup.c
++++ b/mymenusetup.c
+@@ -56,6 +56,9 @@ mySetup::mySetup()
+   mysetup.ShowNewRecs=1;
+   mysetup.RecsPerDir=2;
+   mysetup.DescendSorting=0;
++#if VDRVERSNUM >= 20301
++  mysetup.RecRefreshRate=5;
++#endif
+   mysetup.GoLastReplayed=0;
+   mysetup.ReturnToPlugin=1;
+   mysetup.ReturnToRec=0;
+@@ -91,6 +94,9 @@ myMenuSetup::myMenuSetup()
+   shownewrecs=mysetup.ShowNewRecs;
+   recsperdir=mysetup.RecsPerDir;
+   descendsorting=mysetup.DescendSorting;
++#if VDRVERSNUM >= 20301
++  recrefreshrate=mysetup.RecRefreshRate;
++#endif
+   golastreplayed=mysetup.GoLastReplayed;
+   returntoplugin=mysetup.ReturnToPlugin;
+   limitbandwidth=mysetup.LimitBandwidth;
+@@ -104,6 +110,9 @@ myMenuSetup::myMenuSetup()
+ 
+   sortingtypetexts[0]=tr("ascending");
+   sortingtypetexts[1]=tr("descending");
++  fileSystemFreeMB[0] = tr("no");
++  fileSystemFreeMB[1] = tr("original");
++  fileSystemFreeMB[2] = tr("per file system");
+ 
+   Set();
+ }
+@@ -119,10 +128,14 @@ void myMenuSetup::Set()
+   Add(new cMenuEditBoolItem(tr("Show alternative to new marker"),&patchnew));
+ #if VDRVERSNUM >= 10728
+   Add(new cMenuEditBoolItem(tr("Set menu category"),&setrecordingcat));
+-  if (setrecordingcat == 0)
+ #endif
+-    Add(new cMenuEditBoolItem(tr("Show free disk space for each file system"),&filesystemfreemb));
++  Add(new cMenuEditStraItem(tr("Show free disk space"),                        &filesystemfreemb, 3, fileSystemFreeMB));
++#if VDRVERSNUM >= 20301
++  Add(new cMenuEditIntItem( tr("Refreshrate of recordings list (s) (0 = off)"), &recrefreshrate, 0, 10));
++#endif
++#if VDRVERSNUM < 20309
+   Add(new cMenuEditStraItem(tr("Sorting"),&descendsorting,2,sortingtypetexts));
++#endif
+   Add(new cMenuEditBoolItem(tr("Hide main menu entry"),&hidemainmenuentry));
+ #ifdef MAINMENUHOOKSVERSNUM
+   Add(new cMenuEditBoolItem(tr("Replace original recordings menu"),&replaceorgrecmenu));
+@@ -169,6 +182,9 @@ void myMenuSetup::Store()
+   SetupStore("ShowNewRecs",mysetup.ShowNewRecs=shownewrecs);
+   SetupStore("RecsPerDir",mysetup.RecsPerDir=recsperdir);
+   SetupStore("DescendSorting",mysetup.DescendSorting=descendsorting);
++#if VDRVERSNUM >= 20301
++  SetupStore("RecRefreshRate",mysetup.RecRefreshRate=recrefreshrate);
++#endif
+   SetupStore("GoLastReplayed",mysetup.GoLastReplayed=golastreplayed);
+   SetupStore("ReturnToPlugin",mysetup.ReturnToPlugin=returntoplugin);
+   SetupStore("LimitBandwidth",mysetup.LimitBandwidth=limitbandwidth);
+diff --git a/mymenusetup.h b/mymenusetup.h
+index fe1319c..6d2edb1 100644
+--- a/mymenusetup.h
++++ b/mymenusetup.h
+@@ -65,6 +65,9 @@ class mySetup
+   int ShowNewRecs;
+   int RecsPerDir;
+   int DescendSorting;
++#if VDRVERSNUM >= 20301
++  int RecRefreshRate;
++#endif
+   int GoLastReplayed;
+   int ReturnToPlugin;
+   int ReturnToRec;
+@@ -84,6 +87,7 @@ class myMenuSetup:public cMenuSetupPage
+ {
+  private:
+   const char *sortingtypetexts[2];
++  const char *fileSystemFreeMB[3];
+   RecListColumnType reclistcolumn[MAX_RECLIST_COLUMNS];
+   int hidemainmenuentry;
+   int replaceorgrecmenu;
+@@ -91,6 +95,9 @@ class myMenuSetup:public cMenuSetupPage
+   int shownewrecs;
+   int recsperdir;
+   int descendsorting;
++#if VDRVERSNUM >= 20301
++  int recrefreshrate;
++#endif
+   int golastreplayed;
+   int returntoplugin;
+   int limitbandwidth;
+diff --git a/myreplaycontrol.c b/myreplaycontrol.c
+index a7a76b4..11dcdd6 100644
+--- a/myreplaycontrol.c
++++ b/myreplaycontrol.c
+@@ -7,6 +7,7 @@
+ #include <vdr/status.h>
+ #include <vdr/menu.h>
+ #include <vdr/cutter.h>
++#include <vdr/recording.h>
+ #include "myreplaycontrol.h"
+ #include "mymenusetup.h"
+ #include "tools.h"
+@@ -53,12 +54,12 @@ eOSState myReplayControl::ProcessKey(eKeys Key)
+             {
+               Hide(); // save marks
+               cMarks _marks;
+-              #if VDRVERSNUM > 10713
++#if VDRVERSNUM > 10713
+               cRecording Recording(filename);
+               _marks.Load(filename, Recording.FramesPerSecond(), Recording.IsPesRecording());
+-              #else
++#else
+                _marks.Load(filename);
+-              #endif
++#endif
+               if(!_marks.Count())
+                 Skins.Message(mtError,tr("No editing marks defined!"));
+               else
+diff --git a/po/de_DE.po b/po/de_DE.po
+index 26ca4f1..4cc22f4 100644
+--- a/po/de_DE.po
++++ b/po/de_DE.po
+@@ -183,12 +183,26 @@ msgstr "Alternative zu Neu-Marker anzeigen"
+ msgid "Set menu category"
+ msgstr "Menü-Kategorie setzen"
+ 
+-msgid "Show free disk space for each file system"
+-msgstr "Freien Speicherplatz für jede Partition anzeigen"
++msgid "Show free disk space"
++msgstr "Freien Speicherplatz anzeigen"
++
++msgid "no"
++msgstr "Nein"
++
++msgid "original"
++msgstr "Original"
++
++msgid "per file system"
++msgstr "Pro Dateisystem"
+ 
+ msgid "Sorting"
+ msgstr "Sortierung"
+ 
++#if VDRVERSNUM >= 20301
++msgid "Refreshrate of recordings list (s) (0 = off)"
++msgstr "Refreshrate der Aufnahmenliste (s) (0 = aus)"
++
++#endif
+ msgid "Hide main menu entry"
+ msgstr "Hauptmenüeintrag ausblenden"
+ 
+diff --git a/tools.c b/tools.c
+index c1fc22a..e8128b2 100644
+--- a/tools.c
++++ b/tools.c
+@@ -301,7 +301,9 @@ WorkerThread::WorkerThread():cThread("extrecmenu worker thread")
+   CutterQueue=new CutterList();
+   MoveBetweenFileSystemsList=new MoveList();
+ 
++#if VDRVERSNUM < 20301
+   Start();
++#endif
+ }
+ 
+ WorkerThread::~WorkerThread()
+@@ -327,10 +329,13 @@ void WorkerThread::Action()
+ {
+   CutterListItem *cutteritem=NULL;
+   MoveListItem *moveitem=NULL;
++#if VDRVERSNUM >= 20301
++  bool cutEnd = moveEnd = false;
++#endif
+ 
+   SetPriority(19);
+ #if VDRVERSNUM >= 10706
+-	SetIOPriority(7);
++  SetIOPriority(7);
+ #endif
+ 
+   while(Running())
+@@ -340,13 +345,36 @@ void WorkerThread::Action()
+       cutteritem->SetCutInProgress();
+ 
+ #ifdef USE_VDR_CUTTER
++#if VDRVERSNUM >= 20309
++      cString fileNameDst;
++      fileNameDst = cCutter::EditedFileName(cutteritem->FileName().c_str());
++      {
++      LOCK_RECORDINGS_WRITE;
++      Recordings->AddByName(fileNameDst);
++      dsyslog ("%s %s %d\n", __FILE__, __func__,  __LINE__);
++      }
++      if (!CutRecording(cutteritem->FileName().c_str())) {
++         {
++         LOCK_RECORDINGS_WRITE;
++         cVideoDirectory::RemoveVideoFile(fileNameDst);
++         Recordings->DelByName(fileNameDst);
++         }
++         Skins.QueueMessage(mtError,tr("Can't start editing process!"));
++         }
++      else {
++         LOCK_RECORDINGS_WRITE;
++         Recordings->UpdateByName(fileNameDst);
++         dsyslog ("%s %s %d\n", __FILE__, __func__,  __LINE__);
++         }
++#else
+ #if VDRVERSNUM > 10713
+       if(!CutRecording(cutteritem->FileName().c_str()))
+ #else
+       if (!cCutter::Start(cutteritem->FileName().c_str()))
+ #endif
+         Skins.QueueMessage(mtError,tr("Can't start editing process!"));
+-#else
++#endif
++#else /* USE_VDR_CUTTER */
+       // create filename for edited recording, check for recordings with this name, if exists -> delete recording
+       // (based upon VDR's code (cutter.c))
+       cRecording rec(cutteritem->FileName().c_str());
+@@ -371,15 +399,17 @@ void WorkerThread::Action()
+       }
+       else
+         Skins.QueueMessage(mtError,tr("Can't start editing process!"));
+-#endif
++#endif /* USE_VDR_CUTTER */
+       CutterQueue->Del(cutteritem);
+ 
+ #if VDRVERSNUM >= 20301
+-	//TODO???
++    }
++    else
++      cutEnd = true;
+ #else
+       Recordings.ChangeState();
+-#endif
+     }
++#endif
+ 
+     if((moveitem=MoveBetweenFileSystemsList->First())!=NULL)
+     {
+@@ -391,11 +421,18 @@ void WorkerThread::Action()
+         MoveBetweenFileSystemsList->Clear();
+ 
+ #if VDRVERSNUM >= 20301
+-	//TODO???
++    }
++    else
++      moveEnd = true;
++
++    if (cutEnd && moveEnd) {
++      LOCK_RECORDINGS_WRITE; // to trigger a state change
++      break;
++      }
+ #else
+       Recordings.ChangeState();
+-#endif
+     }
++#endif
+ 
+     sleep(1);
+   }
+@@ -404,6 +441,9 @@ void WorkerThread::Action()
+ void WorkerThread::AddToCutterQueue(std::string Path)
+ {
+   CutterQueue->Add(new CutterListItem(Path));
++#if VDRVERSNUM >= 20301
++  Start();
++#endif
+ }
+ 
+ bool WorkerThread::IsCutting(string Path)
+@@ -426,7 +466,6 @@ void WorkerThread::CancelCut(string Path)
+         cancelcut=true;
+       else
+         CutterQueue->Del(item);
+-
+       return;
+     }
+   }
+@@ -683,7 +722,7 @@ void WorkerThread::AddToMoveList(string From,string To)
+ {
+   MoveBetweenFileSystemsList->Add(new MoveListItem(From,To));
+ #if VDRVERSNUM >= 20301
+-	//TODO???
++  Start();
+ #else
+   Recordings.ChangeState();
+ #endif
+@@ -790,7 +829,7 @@ bool WorkerThread::Move(string From,string To)
+       closedir(dir);
+ 
+ #if VDRVERSNUM >= 20301
+-			LOCK_RECORDINGS_WRITE
++      LOCK_RECORDINGS_WRITE
+       cRecording rec(From.c_str());
+       rec.Delete();
+       Recordings->DelByName(From.c_str());
+diff --git a/tools.h b/tools.h
+index b2c129a..5be74c6 100644
+--- a/tools.h
++++ b/tools.h
+@@ -103,6 +103,9 @@ class WorkerThread:public cThread
+ {
+   private:
+     bool cancelmove,cancelcut;
++#if VDRVERSNUM >= 20301
++    bool cutEnd, moveEnd;
++#endif
+     MoveList *MoveBetweenFileSystemsList;
+     CutterList *CutterQueue;
+     void Cut(std::string From,std::string To);
