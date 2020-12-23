@@ -5,10 +5,10 @@ LIC_FILES_CHKSUM = "file://LICENSE.txt;md5=d273d63619c9aeaf15cdaf76422c4f87"
 
 SRC_URI = "https://fonts.google.com/download?family=Open%20Sans;downloadfilename=open-sans-fonts.zip"
 
-PR="r3"
+PR="r4"
 
-SRC_URI[md5sum] = "bc58a717471519a7f4a5f40a74285477"
-SRC_URI[sha256sum] = "ba3df6c0e20f2aea2a1f233c443402605d52d8b46a76fe0debfa2bf25c3fe049"
+SRC_URI[md5sum] = "5355c7de26698be12160d21e547e17b6"
+SRC_URI[sha256sum] = "da00d6f00a99963ca7e1a5869e3bbf530d57ce61f18e033b9f8c49c30b7043f2"
 
 DEPENDS = "unzip-native"
 
