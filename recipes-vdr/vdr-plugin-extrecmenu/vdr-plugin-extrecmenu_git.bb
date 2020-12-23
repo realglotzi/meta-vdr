@@ -2,12 +2,10 @@ SUMMARY = "VDR extrecmenu plugin"
 LICENSE = "GPLv2"
 LIC_FILES_CHKSUM = "file://COPYING;md5=892f569a555ba9c07a568a7c0c4fa63a"
 
-SRCREV = "77d10faec3c7b0abe25ba3b161dc3b4e2cad042b"
-SRC_URI = "git://projects.vdr-developer.org/vdr-plugin-extrecmenu.git \
-           file://extrecmenu-vdr-2.3.x-v2.patch \
-          "
+SRCREV = "ac72cad61ef6df876d3e68f93689192c225a6527"
+SRC_URI = "git://git@gitlab.com/kamel5/extrecmenung.git;protocol=ssh;branch=master"
 
-PR="r4"
+PR="r6"
 
 S = "${WORKDIR}/git"
 
