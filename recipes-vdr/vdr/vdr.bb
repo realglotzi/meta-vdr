@@ -5,23 +5,28 @@ SECTION = "console/multimedia"
 LICENSE = "GPLv2"
 AUTHOR = "Klaus Schmidinger"
 
-PR="r0"
+PR="r9"
+
+SRC_URI = "git://git.tvdr.de/vdr.git"
+SRCREV = "d2e0087c4e13b2acbecc4bafb3cb2ab656c95339"
+
+S = "${WORKDIR}/git"
 
 # the current version
-PV = "2.4.0"
+#PV = "2.4.6"
 
-SRC_URI = "ftp://ftp.tvdr.de/vdr/${P}.tar.bz2"
+#SRC_URI = "ftp://ftp.tvdr.de/vdr/${P}.tar.bz2"
 
-SRC_URI[md5sum] = "12c6a3abeadfa915fcfe736bb047a3ab"
-SRC_URI[sha256sum] = "93af49fe87048073dc38ef5e6c71e9704344d730f21c261afac69e3c937f8cce"
+#SRC_URI[md5sum] = "aa91614159ae2db45655d35918e2c24e"
+#SRC_URI[sha256sum] = "c8993babf2a878a0fba84558de1e35f042c3c66f7c1ec569eea00a3af1014e4b"
 
 LIC_FILES_CHKSUM = "file://COPYING;md5=892f569a555ba9c07a568a7c0c4fa63a"
 
 SRC_URI_append = " \
         file://vdr.service \
-	file://MainMenuHooks-v1_0_3.patch \
+        file://MainMenuHooks-v1_0_3.patch \
         file://vdr-2.2.0-missing-plugin.patch \
-        file://vdr-2.3.4_zapcockpit.patch \
+        file://vdr-2.4.0_zapcockpit.patch \
 "
 
 inherit systemd pkgconfig gettext

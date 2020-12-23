@@ -1,33 +1,7 @@
-Description: <short summary of the patch>
- TODO: Put a short summary on the line above and replace this paragraph
- with a longer explanation of this change. Complete the meta-information
- with other relevant fields (see below for details). To make it easier, the
- information below has been extracted from the changelog. Adjust it or drop
- it.
- .
- vdr (2.3.4-2ckone0~trusty) trusty; urgency=medium
- .
-   * added menuselection patch
-Author: CKone <ckone-launchpad@arcor.de>
-
----
-The information above should follow the Patch Tagging Guidelines, please
-checkout http://dep.debian.net/deps/dep3/ to learn about the format. Here
-are templates for supplementary fields that you might want to add:
-
-Origin: <vendor|upstream|other>, <url of original patch>
-Bug: <url in upstream bugtracker>
-Bug-Debian: http://bugs.debian.org/<bugnumber>
-Bug-Ubuntu: https://launchpad.net/bugs/<bugnumber>
-Forwarded: <no|not-needed|url proving that it has been forwarded>
-Reviewed-By: <name and email of someone who approved the patch>
-Last-Update: <YYYY-MM-DD>
-
-Index: vdr-2.3.8/config.c
-===================================================================
---- vdr-2.3.8.orig/config.c
-+++ vdr-2.3.8/config.c
-@@ -417,6 +417,11 @@ cSetup::cSetup(void)
+diff -Nur vdr-2.4.0/config.c vdr-2.4.0.p/config.c
+--- vdr-2.4.0/config.c	2018-02-15 15:40:36.000000000 +0100
++++ vdr-2.4.0.p/config.c	2019-04-04 14:57:48.234702963 +0200
+@@ -417,6 +417,11 @@
    strcpy(SVDRPDefaultHost, "");
    ZapTimeout = 3;
    ChannelEntryTimeout = 1000;
@@ -39,8 +13,8 @@ Index: vdr-2.3.8/config.c
    RcRepeatDelay = 300;
    RcRepeatDelta = 100;
    DefaultPriority = 50;
-@@ -644,6 +649,11 @@ bool cSetup::Parse(const char *Name, con
-   else if (!strcasecmp(Name, "SVDRPdefaultHost"))    strn0cpy(SVDRPDefaultHost, Value, sizeof(SVDRPDefaultHost));
+@@ -645,6 +650,11 @@
+   else if (!strcasecmp(Name, "SVDRPDefaultHost"))    strn0cpy(SVDRPDefaultHost, Value, sizeof(SVDRPDefaultHost));
    else if (!strcasecmp(Name, "ZapTimeout"))          ZapTimeout         = atoi(Value);
    else if (!strcasecmp(Name, "ChannelEntryTimeout")) ChannelEntryTimeout= atoi(Value);
 +  else if (!strcasecmp(Name, "ZapcockpitUseGroups")) ZapcockpitUseGroups= atoi(Value);
@@ -51,7 +25,7 @@ Index: vdr-2.3.8/config.c
    else if (!strcasecmp(Name, "RcRepeatDelay"))       RcRepeatDelay      = atoi(Value);
    else if (!strcasecmp(Name, "RcRepeatDelta"))       RcRepeatDelta      = atoi(Value);
    else if (!strcasecmp(Name, "DefaultPriority"))     DefaultPriority    = atoi(Value);
-@@ -775,6 +785,11 @@ bool cSetup::Save(void)
+@@ -777,6 +787,11 @@
    Store("SVDRPDefaultHost",   SVDRPDefaultHost);
    Store("ZapTimeout",         ZapTimeout);
    Store("ChannelEntryTimeout",ChannelEntryTimeout);
@@ -63,11 +37,10 @@ Index: vdr-2.3.8/config.c
    Store("RcRepeatDelay",      RcRepeatDelay);
    Store("RcRepeatDelta",      RcRepeatDelta);
    Store("DefaultPriority",    DefaultPriority);
-Index: vdr-2.3.8/config.h
-===================================================================
---- vdr-2.3.8.orig/config.h
-+++ vdr-2.3.8/config.h
-@@ -297,6 +297,11 @@ public:
+diff -Nur vdr-2.4.0/config.h vdr-2.4.0.p/config.h
+--- vdr-2.4.0/config.h	2018-03-19 16:06:46.000000000 +0100
++++ vdr-2.4.0.p/config.h	2019-04-04 14:57:48.235702949 +0200
+@@ -293,6 +293,11 @@
    char SVDRPDefaultHost[HOST_NAME_MAX];
    int ZapTimeout;
    int ChannelEntryTimeout;
@@ -79,11 +52,10 @@ Index: vdr-2.3.8/config.h
    int RcRepeatDelay;
    int RcRepeatDelta;
    int DefaultPriority, DefaultLifetime;
-Index: vdr-2.3.8/menu.c
-===================================================================
---- vdr-2.3.8.orig/menu.c
-+++ vdr-2.3.8/menu.c
-@@ -4092,6 +4092,11 @@ void cMenuSetupMisc::Set(void)
+diff -Nur vdr-2.4.0/menu.c vdr-2.4.0.p/menu.c
+--- vdr-2.4.0/menu.c	2019-04-04 15:47:25.722519143 +0200
++++ vdr-2.4.0.p/menu.c	2019-04-04 15:29:02.650105356 +0200
+@@ -4184,6 +4184,11 @@
       }
    Add(new cMenuEditIntItem( tr("Setup.Miscellaneous$Zap timeout (s)"),            &data.ZapTimeout));
    Add(new cMenuEditIntItem( tr("Setup.Miscellaneous$Channel entry timeout (ms)"), &data.ChannelEntryTimeout, 0));
@@ -95,7 +67,7 @@ Index: vdr-2.3.8/menu.c
    Add(new cMenuEditIntItem( tr("Setup.Miscellaneous$Remote control repeat delay (ms)"), &data.RcRepeatDelay, 0));
    Add(new cMenuEditIntItem( tr("Setup.Miscellaneous$Remote control repeat delta (ms)"), &data.RcRepeatDelta, 0));
    Add(new cMenuEditChanItem(tr("Setup.Miscellaneous$Initial channel"),            &data.InitialChannel, tr("Setup.Miscellaneous$as before")));
-@@ -4682,7 +4687,7 @@ cDisplayChannel::cDisplayChannel(int Num
+@@ -4654,7 +4659,7 @@
    lastTime.Set();
  }
  
@@ -104,17 +76,17 @@ Index: vdr-2.3.8/menu.c
  :cOsdObject(true)
  {
    currentDisplayChannel = this;
-@@ -4697,7 +4702,8 @@ cDisplayChannel::cDisplayChannel(eKeys F
-   channel = NULL;
-   LOCK_CHANNELS_READ;
-   channel = Channels->GetByNumber(cDevice::CurrentChannel());
+@@ -4672,7 +4677,8 @@
+     LOCK_CHANNELS_READ;
+     channel = Channels->GetByNumber(cDevice::CurrentChannel());
+   }
 -  ProcessKey(FirstKey);
 +  if (processKey)
 +     ProcessKey(FirstKey);
  }
  
  cDisplayChannel::~cDisplayChannel()
-@@ -4942,6 +4948,798 @@ eOSState cDisplayChannel::ProcessKey(eKe
+@@ -4922,6 +4928,793 @@
    return osEnd;
  }
  
@@ -219,14 +191,13 @@ Index: vdr-2.3.8/menu.c
 +     return;
 +  if (number < 0)
 +     return;
-+  int selectedChannel = number > cChannels::MaxNumber() ? key - k0 : number * 10 + key - k0;
++  LOCK_CHANNELS_READ;
++  int selectedChannel = number > Channels->MaxNumber() ? key - k0 : number * 10 + key - k0;
 +  int candidateStartNumber = selectedChannel * 10;
 +  channellist.Clear();
-+  LOCK_CHANNELS_READ; 
-+  const cChannels* channels = Channels;
 +  const cChannel *candidatesStart = Channels->GetByNumber(candidateStartNumber);
 +  int numHints = 0;
-+  for (const cChannel *candidate = candidatesStart; candidate; candidate = channels->Next(candidate)) {
++  for (const cChannel *candidate = candidatesStart; candidate; candidate = Channels->Next(candidate)) {
 +      if (candidate->GroupSep())
 +         continue;
 +      numHints++;
@@ -236,7 +207,7 @@ Index: vdr-2.3.8/menu.c
 +  if (numHints == 0)
 +     return;
 +  dcExt->SetNumChannelHints(numHints);
-+  for (const cChannel *candidate = candidatesStart; candidate; candidate = channels->Next(candidate)) {
++  for (const cChannel *candidate = candidatesStart; candidate; candidate = Channels->Next(candidate)) {
 +      if (candidate->GroupSep())
 +         continue;
 +      dcExt->SetChannelHint(candidate);
@@ -607,10 +578,9 @@ Index: vdr-2.3.8/menu.c
 +{
 +  channellist.Clear();
 +  const cChannel *lastSep = NULL;
-+  LOCK_CHANNELS_READ; 
-+  const cChannels* channels = Channels;
 +  if (Setup.ZapcockpitHideLastGroup)
-+     lastSep = LastChannelSep(); 
++     lastSep = LastChannelSep();
++  LOCK_CHANNELS_READ;
 +  for (const cChannel *c = Channels->First(); c; c = Channels->Next(c)) {
 +      if (c->GroupSep()) {
 +         if (Setup.ZapcockpitHideLastGroup && c == lastSep)
@@ -654,10 +624,9 @@ Index: vdr-2.3.8/menu.c
 +     cGroupListItem *allChannels = new cGroupListItem(NULL);
 +     int totalNumChannels = 0;
 +     const cChannel *lastSep = NULL;
-+     LOCK_CHANNELS_READ;
-+     const cChannels* channels = Channels;
 +     if (Setup.ZapcockpitHideLastGroup)
 +        lastSep = LastChannelSep();
++     LOCK_CHANNELS_READ;
 +     for (const cChannel *c = Channels->First(); c; c = Channels->Next(c)) {
 +        if (c->GroupSep()) {
 +           if (Setup.ZapcockpitHideLastGroup && c == lastSep)
@@ -672,12 +641,11 @@ Index: vdr-2.3.8/menu.c
 +     }
 +
 +  const cChannel *lastSep = NULL;
-+  LOCK_CHANNELS_READ;
-+  const cChannels* channels = Channels;
 +  if (Setup.ZapcockpitHideLastGroup)
 +     lastSep = LastChannelSep();
 +  int numChannels = 0;
-+  cGroupListItem *item = NULL; 
++  cGroupListItem *item = NULL;
++  LOCK_CHANNELS_READ;
 +  for (const cChannel *c = Channels->First(); c; c = Channels->Next(c)) {
 +      if (c->GroupSep()) {
 +         if (item) {
@@ -699,7 +667,6 @@ Index: vdr-2.3.8/menu.c
 +{
 +  const cChannel *group = NULL;
 +  LOCK_CHANNELS_READ;
-+  const cChannels* channels = Channels;
 +  for (const cChannel *c = cur; c; c = Channels->Prev(c)) {
 +      if (c->GroupSep()) {
 +         group = c;
@@ -742,7 +709,6 @@ Index: vdr-2.3.8/menu.c
 +     }
 +  channellist.Clear();
 +  LOCK_CHANNELS_READ;
-+  const cChannels* channels = Channels;
 +  for (const cChannel *c = dynamic_cast<cChannel*>(curChannel->Next()); c; c = Channels->Next(c)) {
 +      if (c->GroupSep())
 +         break;
@@ -873,8 +839,6 @@ Index: vdr-2.3.8/menu.c
 +bool cDisplayChannelExtended::SwitchChannel(void)
 +{
 +  const cChannel *newChannel = NULL;
-+  LOCK_CHANNELS_READ; 
-+  const cChannels* channels = Channels;
 +  if ( state == esChannelList || 
 +       state == esChannelListInfo ||
 +       state == esGroupsChannelList ||
@@ -887,6 +851,7 @@ Index: vdr-2.3.8/menu.c
 +     if (!item)
 +        return false;
 +     const cChannel *cGroup = item->Channel();
++     LOCK_CHANNELS_READ;
 +     for (const cChannel *c = cGroup; c; c = Channels->Next(c))
 +         if (!c->GroupSep()) {
 +            newChannel = c;
@@ -896,6 +861,7 @@ Index: vdr-2.3.8/menu.c
 +  if (!newChannel || newChannel == channel)
 +     return false;
 +  SetTrackDescriptions(newChannel->Number()); // to make them immediately visible in the channel display
++  LOCK_CHANNELS_READ;
 +  Channels->SwitchTo(newChannel->Number());
 +  SetTrackDescriptions(newChannel->Number()); // switching the channel has cleared them
 +  channel = newChannel;
@@ -903,7 +869,8 @@ Index: vdr-2.3.8/menu.c
 +}
 +
 +const cChannel *cDisplayChannelExtended::LastChannelSep(void)
-+{ LOCK_CHANNELS_READ; const cChannels* channels = Channels;
++{
++  LOCK_CHANNELS_READ;
 +  for (const cChannel *c = Channels->Last(); c; c = Channels->Prev(c))
 +      if (c->GroupSep())
 +         return c;
@@ -913,11 +880,10 @@ Index: vdr-2.3.8/menu.c
  // --- cDisplayVolume --------------------------------------------------------
  
  #define VOLUMETIMEOUT 1000 //ms
-Index: vdr-2.3.8/menu.h
-===================================================================
---- vdr-2.3.8.orig/menu.h
-+++ vdr-2.3.8/menu.h
-@@ -119,30 +119,102 @@ public:
+diff -Nur vdr-2.4.0/menu.h vdr-2.4.0.p/menu.h
+--- vdr-2.4.0/menu.h	2018-04-14 12:24:41.000000000 +0200
++++ vdr-2.4.0.p/menu.h	2019-04-04 15:27:27.648451092 +0200
+@@ -119,30 +119,102 @@
  
  class cDisplayChannel : public cOsdObject {
  private:
@@ -963,7 +929,7 @@ Index: vdr-2.3.8/menu.h
 +  esGroupsList,
 +  esGroupsChannelList,
 +  esGroupsChannelListInfo,
-+  esClose  
++  esClose
 +  };
 +
 +class cChannelListItem : public cListObject {
@@ -1011,7 +977,7 @@ Index: vdr-2.3.8/menu.h
 +  void SetGroupList(void);
 +  int GetIndexGroup(const cChannel *c);
 +  void InitGroupChannelList(cSkinDisplayChannelExtended *dcExt);
-+  void SetGroupChannelList(cSkinDisplayChannelExtended *dcExt);  
++  void SetGroupChannelList(cSkinDisplayChannelExtended *dcExt);
 +  void CursorUp(cSkinDisplayChannelExtended *dcExt);
 +  void CursorDown(cSkinDisplayChannelExtended *dcExt);
 +  void DisplayChannelList(cSkinDisplayChannelExtended *dcExt);
@@ -1028,11 +994,10 @@ Index: vdr-2.3.8/menu.h
  class cDisplayVolume : public cOsdObject {
  private:
    cSkinDisplayVolume *displayVolume;
-Index: vdr-2.3.8/po/de_DE.po
-===================================================================
---- vdr-2.3.8.orig/po/de_DE.po
-+++ vdr-2.3.8/po/de_DE.po
-@@ -1338,6 +1338,21 @@ msgstr "Mindestzeit für vorherigen Kanal
+diff -Nur vdr-2.4.0/po/de_DE.po vdr-2.4.0.p/po/de_DE.po
+--- vdr-2.4.0/po/de_DE.po	2019-04-04 15:47:31.199441881 +0200
++++ vdr-2.4.0.p/po/de_DE.po	2019-04-04 15:29:21.903832616 +0200
+@@ -1347,6 +1347,21 @@
  msgid "Setup.Miscellaneous$Channel entry timeout (ms)"
  msgstr "Zeitlimit für Kanaleingabe (ms)"
  
@@ -1054,7 +1019,7 @@ Index: vdr-2.3.8/po/de_DE.po
  msgid "Setup.Miscellaneous$Remote control repeat delay (ms)"
  msgstr "Fernbedienung Wiederholverzögerung (ms)"
  
-@@ -1413,6 +1428,9 @@ msgstr "Aufzeichnung beenden?"
+@@ -1419,6 +1434,9 @@
  msgid "Cancel editing?"
  msgstr "Bearbeitung abbrechen?"
  
@@ -1064,11 +1029,10 @@ Index: vdr-2.3.8/po/de_DE.po
  msgid "No audio available!"
  msgstr "Kein Audio verfügbar!"
  
-Index: vdr-2.3.8/skins.c
-===================================================================
---- vdr-2.3.8.orig/skins.c
-+++ vdr-2.3.8/skins.c
-@@ -79,6 +79,13 @@ void cSkinDisplayChannel::SetPositioner(
+diff -Nur vdr-2.4.0/skins.c vdr-2.4.0.p/skins.c
+--- vdr-2.4.0/skins.c	2019-04-04 15:47:25.665519948 +0200
++++ vdr-2.4.0.p/skins.c	2019-04-04 14:57:48.240702878 +0200
+@@ -79,6 +79,13 @@
       SetMessage(mtInfo, cString::sprintf(tr("Moving dish to %.1f..."), double(positioner->TargetLongitude()) / 10));
  }
  
@@ -1082,11 +1046,10 @@ Index: vdr-2.3.8/skins.c
  // --- cSkinDisplayMenu ------------------------------------------------------
  
  cSkinDisplayMenu::cSkinDisplayMenu(void)
-Index: vdr-2.3.8/skins.h
-===================================================================
---- vdr-2.3.8.orig/skins.h
-+++ vdr-2.3.8/skins.h
-@@ -101,6 +101,34 @@ public:
+diff -Nur vdr-2.4.0/skins.h vdr-2.4.0.p/skins.h
+--- vdr-2.4.0/skins.h	2017-11-02 16:04:56.000000000 +0100
++++ vdr-2.4.0.p/skins.h	2019-04-04 14:57:48.241702864 +0200
+@@ -101,6 +101,34 @@
    */
    };
  
@@ -1121,11 +1084,10 @@ Index: vdr-2.3.8/skins.h
  enum eMenuCategory {
    mcUndefined = -1,
    mcUnknown = 0,
-Index: vdr-2.3.8/vdr.c
-===================================================================
---- vdr-2.3.8.orig/vdr.c
-+++ vdr-2.3.8/vdr.c
-@@ -1079,7 +1079,7 @@ int main(int argc, char *argv[])
+diff -Nur vdr-2.4.0/vdr.c vdr-2.4.0.p/vdr.c
+--- vdr-2.4.0/vdr.c	2019-04-04 15:47:25.719519186 +0200
++++ vdr-2.4.0.p/vdr.c	2019-04-04 14:57:48.241702864 +0200
+@@ -1088,7 +1088,7 @@
          // Channel display:
          if (!EITScanner.Active() && cDevice::CurrentChannel() != LastChannel) {
             if (!Menu)
@@ -1134,18 +1096,17 @@ Index: vdr-2.3.8/vdr.c
             LastChannel = cDevice::CurrentChannel();
             LastChannelChanged = Now;
             }
-@@ -1290,8 +1290,8 @@ int main(int argc, char *argv[])
+@@ -1287,7 +1287,8 @@
            case kChanDn|k_Repeat:
            case kChanDn:
                 if (!Interact) {
 -                  Menu = new cDisplayChannel(NORMALKEY(key));
--                  continue;
 +                  Menu = new cDisplayChannelExtended(NORMALKEY(key));
 +                  Menu->ProcessKey(NORMALKEY(key));
+                   continue;
                    }
                 else if (cDisplayChannel::IsOpen() || cControl::Control()) {
-                   Interact->ProcessKey(key);
-@@ -1496,7 +1496,8 @@ int main(int argc, char *argv[])
+@@ -1480,7 +1481,8 @@
               case kUp:
               case kDown|k_Repeat:
               case kDown:
