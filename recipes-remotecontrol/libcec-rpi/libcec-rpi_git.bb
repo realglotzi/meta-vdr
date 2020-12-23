@@ -4,13 +4,13 @@ HOMEPAGE = "http://libcec.pulse-eight.com/"
 COMPATIBLE_MACHINE = "(raspberrypi|raspberrypi2|raspberrypi3)"
 
 LICENSE = "GPLv2+"
-LIC_FILES_CHKSUM = "file://COPYING;md5=e61fd86f9c947b430126181da2c6c715"
+LIC_FILES_CHKSUM = "file://COPYING;md5=b3a719e97f49e4841e90573f9b1a98ac"
 
 DEPENDS = "udev lockdev userland virtual/libgl p8-platform"
 
-PR="r4"
+PR="r5"
 
-SRCREV = "62b8520cf801343d93e8427393d3d929e59d9c7e"
+SRCREV = "76551ea1dd9a55f0ce1533e440dc12dbc594f7ba"
 SRC_URI = "git://github.com/Pulse-Eight/libcec.git"
 
 S = "${WORKDIR}/git"

@@ -4,11 +4,10 @@ HOMEPAGE = "http://libcec.pulse-eight.com/"
 LICENSE = "GPLv2+"
 LIC_FILES_CHKSUM = "file://${WORKDIR}/git/src/os.h;beginline=21;md5=56563c1d1564ba87409393329327f049"
 
-PR="r2"
+PR="r3"
 
-SRCREV = "041a8c6cf4c44dbf0a8e295e3d3d2da13bbe0ad3"
-SRC_URI = "git://github.com/Pulse-Eight/platform.git \
-           file://fix_p8_libdir.patch"
+SRCREV = "a7cd0d5780ed80a4e70480d1650749f29e8a1fb2"
+SRC_URI = "git://github.com/Pulse-Eight/platform.git"
 
 S = "${WORKDIR}/git"
 
