@@ -14,7 +14,6 @@ IMAGE_INSTALL += " \
 	font-opensans \
 	libcec-rpi \
 	irmplircd \
-	graphlcd-base \
 	vdr-font-symbols \
 	vdr \
 	vdr-locale-de-de \
@@ -24,14 +23,10 @@ IMAGE_INSTALL += " \
 	vdr-plugin-femon-locale-de-de \
 	vdr-plugin-satip \
 	vdr-plugin-satip-locale-de-de \
-	vdr-plugin-graphlcd \
-	vdr-plugin-graphlcd-locale-de-de \
 	vdr-plugin-svdrpservice \
 	vdr-plugin-svdrpservice-locale-de-de \
 	vdr-plugin-epgsync \
 	vdr-plugin-epgsync-locale-de-de \
-	vdr-plugin-neutrinoepg \
-	vdr-plugin-neutrinoepg-locale-de-de \
 	vdr-plugin-rpihddevice \
 	vdr-plugin-rpihddevice-locale-de-de \
 	vdr-plugin-skinsoppalusikka \
