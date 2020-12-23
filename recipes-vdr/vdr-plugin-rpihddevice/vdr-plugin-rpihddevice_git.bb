@@ -10,6 +10,7 @@ PR="r26"
 
 SRC_URI += " \
 	file://rpihddevice-opt-vc.diff \
+  file://rpihddevice-fix-define.diff \
 "
 
 S = "${WORKDIR}/git"
@@ -22,6 +23,7 @@ DEPENDS = " \
 	vdr \
 	ffmpeg \
 	freetype \
+  userland \
 	virtual/libgl \
 	virtual/libgles2 \
 	virtual/egl \

@@ -1,0 +1,15 @@
+diff --git a/audio.c b/audio.c
+index bffd73e..8d52747 100644
+--- a/audio.c
++++ b/audio.c
+@@ -80,6 +80,10 @@ extern "C" {
+ 
+ #define AVPKT_BUFFER_SIZE (KILOBYTE(256))
+ 
++#ifndef FF_INPUT_BUFFER_PADDING_SIZE
++  #define FF_INPUT_BUFFER_PADDING_SIZE AV_INPUT_BUFFER_PADDING_SIZE
++#endif
++
+ class cRpiAudioDecoder::cParser
+ {
+ 
