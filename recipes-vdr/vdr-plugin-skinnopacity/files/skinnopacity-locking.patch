@@ -1,0 +1,344 @@
+diff --git a/detailview.c b/detailview.c
+index ad230b5..6b7f266 100644
+--- a/detailview.c
++++ b/detailview.c
+@@ -92,7 +92,7 @@ void cNopacityView::DrawHeader(void) {
+     if (channel) {
+         cImage *logo = imgCache->GetLogo(ctLogo, channel);
+         if (logo) {
+-            pixmapHeaderLogo->DrawImage(cPoint(border, max((headerHeight - geoManager->channelLogoHeight - border)/2, 0)), *logo);
++            pixmapHeaderLogo->DrawImage(cPoint(border, std::max((headerHeight - geoManager->channelLogoHeight - border)/2, 0)), *logo);
+             xText += logoWidth + border;
+         }
+     }
+@@ -191,7 +191,7 @@ void cNopacityView::DrawFloatingContent(std::string *infoText, cTvMedia *img, cT
+     int textLinesFull = wTextFull.Lines();
+     int textHeight = lineHeight * (textLinesTall + textLinesFull) + 2*border;
+     int yText = border;
+-    CreateContent(max(textHeight, imgHeight + 2*border));
++    CreateContent(std::max(textHeight, imgHeight + 2*border));
+     for (int i=0; i < textLinesTall; i++) {
+         pixmapContent->DrawText(cPoint(border, yText), wTextTall.GetLine(i), Theme.Color(clrMenuFontDetailViewText), clrTransparent, font);
+         yText += lineHeight;
+diff --git a/displaychannel.c b/displaychannel.c
+index ac9e179..f726358 100644
+--- a/displaychannel.c
++++ b/displaychannel.c
+@@ -90,29 +90,12 @@ void cNopacityDisplayChannel::SetEvents(const cEvent *Present, const cEvent *Fol
+     if (!doOutput)
+         return;
+     present = Present;
++    following = Following;
+     channelView->ClearProgressBar();
+     if (!groupSep) {
+         channelView->DrawProgressbarBackground();
+         channelView->ClearEPGInfo();
+     }
+-    if (Present) {
+-        if (!groupSep) {
+-            SetProgressBar(Present);
+-        }
+-        bool recCurrent = false;
+-        eTimerMatch TimerMatch = tmNone;
+-        const cTimer *Timer = Timers.GetMatch(Present, &TimerMatch);
+-        if (Timer && Timer->Recording()) {
+-            recCurrent = true;
+-        }
+-        channelView->DrawEPGInfo(Present, true, recCurrent);
+-    }
+-    if (Following) {
+-        bool recFollowing = Following->HasTimer();
+-        channelView->DrawEPGInfo(Following, false, recFollowing);
+-    }
+-    if (config.GetValue("displayPoster"))
+-        channelView->DrawPoster(Present, initial);
+ }
+ 
+ void cNopacityDisplayChannel::SetProgressBar(const cEvent *present) {
+@@ -147,11 +130,19 @@ void cNopacityDisplayChannel::Flush(void) {
+     if (initial || channelChange)
+         channelView->DrawDate();
+ 
+-    if (present) {
++    if (present && !groupSep) {
+         SetProgressBar(present);
+     } else
+         channelView->ClearProgressBar();
+ 
++    if (!groupSep) {
++       channelView->ClearEPGInfo();
++       channelView->DrawEvents(present, following);
++       }
++
++    if (config.GetValue("displayPoster"))
++       channelView->DrawPoster(present, initial);
++
+     if (!groupSep)
+         channelView->DrawScreenResolution();
+     else
+@@ -183,7 +174,7 @@ void cNopacityDisplayChannel::Action(void) {
+     while (Running()) {
+         uint64_t Now = cTimeMs::Now();
+         cPixmap::Lock();
+-        double t = min(double(Now - Start) / FadeTime, 1.0);
++        double t = std::min(double(Now - Start) / FadeTime, 1.0);
+         int Alpha = t * ALPHA_OPAQUE;
+         channelView->SetAlpha(Alpha);
+         cPixmap::Unlock();
+diff --git a/displaychannel.h b/displaychannel.h
+index 65b6884..2a56059 100644
+--- a/displaychannel.h
++++ b/displaychannel.h
+@@ -20,6 +20,7 @@ private:
+     int currentLast;
+     bool showSignal;
+     const cEvent *present;
++    const cEvent *following;
+     virtual void Action(void);
+     void SetProgressBar(const cEvent *present);
+ public:
+diff --git a/displaychannelview.c b/displaychannelview.c
+index c4e8ddc..aac366a 100644
+--- a/displaychannelview.c
++++ b/displaychannelview.c
+@@ -374,6 +374,32 @@ void cNopacityDisplayChannelView::ClearProgressBar(void) {
+     pixmapProgressBar->Fill(clrTransparent);
+ }
+ 
++void cNopacityDisplayChannelView::DrawEvents(const cEvent *Present, const cEvent *Following) {
++    if (Present) {
++       bool recCurrent = false;
++       {
++       LOCK_TIMERS_READ;
++       eTimerMatch TimerMatch = tmNone;
++       const cTimer *Timer = Timers->GetMatch(Present, &TimerMatch);
++       if (Timer && Timer->Recording()) {
++          recCurrent = true;
++          }
++       }
++       DrawEPGInfo(Present, true, recCurrent);
++    }
++    if (Following) {
++       bool recFollowing = false;
++       {
++       LOCK_TIMERS_READ;
++       eTimerMatch TimerMatch = tmNone;
++       const cTimer *Timer = Timers->GetMatch(Following, &TimerMatch);
++       if (Timer && Timer->HasFlags(tfActive)) {
++          recFollowing = true;
++          }
++       }
++       DrawEPGInfo(Following, false, recFollowing);
++    }
++}
+ 
+ void cNopacityDisplayChannelView::DrawEPGInfo(const cEvent *e, bool present, bool recording) {
+     int indent = 20;
+@@ -627,7 +653,7 @@ void cNopacityDisplayChannelView::DrawSignalMeter(void) {
+         signalHeight = imgSignal->Height();
+         int signalMeterY = geoManager->channelFooterY +
+                            (geoManager->channelFooterHeight - 2*signalHeight - 5)/2;
+-        int labelWidth = max(fontInfoline->Width(*signalStrength),
++        int labelWidth = std::max(fontInfoline->Width(*signalStrength),
+                              fontInfoline->Width(*signalQuality)) + 2;
+         signalX = geoManager->channelFooterHeight / 2 + labelWidth;
+         pixmapSignalStrength = osd->CreatePixmap(3,
+@@ -779,9 +805,10 @@ void cNopacityDisplayChannelView::DrawChannelGroups(const cChannel *Channel, cSt
+ 
+ std::string cNopacityDisplayChannelView::GetChannelSep(const cChannel *channel, bool prev) {
+     std::string sepName = "";
+-    const cChannel *sep = prev ? Channels.Prev(channel) :
+-                                 Channels.Next(channel);
+-    for (; sep; (prev)?(sep = Channels.Prev(sep)):(sep = Channels.Next(sep))) {
++    LOCK_CHANNELS_READ;
++    const cChannel *sep = prev ? Channels->Prev(channel) :
++                                 Channels->Next(channel);
++    for (; sep; (prev)?(sep = Channels->Prev(sep)):(sep = Channels->Next(sep))) {
+         if (sep->GroupSep()) {
+             sepName = sep->Name();
+             break;
+@@ -798,7 +825,8 @@ void cNopacityDisplayChannelView::DrawSourceInfo(void) {
+         channelInfo = cString::sprintf("%s #%d", source->Description(), cDevice::ActualDevice()->DeviceNumber());
+     }
+     if (cRecordControls::Active()) {
+-        cSortedTimers SortedTimers;
++        LOCK_TIMERS_READ;
++        cSortedTimers SortedTimers(Timers);
+         bool first = true;
+         int truncPos = 0;
+         for (int i = 0; i < SortedTimers.Size(); i++)
+diff --git a/displaychannelview.h b/displaychannelview.h
+index 7a3fd91..8a63bb5 100644
+--- a/displaychannelview.h
++++ b/displaychannelview.h
+@@ -50,6 +50,7 @@ public:
+     void DrawProgressbarBackground(void);
+     void DrawProgressBar(int Current, int Total);
+     void ClearProgressBar(void);
++    void DrawEvents(const cEvent *Present, const cEvent *Following);
+     void DrawEPGInfo(const cEvent *e, bool present, bool recording);
+     void ClearEPGInfo(void);
+     void DrawStatusIcons(const cChannel *Channel);
+diff --git a/displaymenu.c b/displaymenu.c
+index 31737e5..0302e8f 100644
+--- a/displaymenu.c
++++ b/displaymenu.c
+@@ -100,7 +100,8 @@ void cNopacityDisplayMenu::DrawTimers(bool timersChanged, int numConflicts) {
+                 drawRemoteTimers = pRemoteTimers->Service("RemoteTimers::RefreshTimers-v1.0", &errorMsg);
+             }
+             timers.Clear();
+-            cSortedTimers SortedTimers;
++            LOCK_TIMERS_READ;
++            cSortedTimers SortedTimers(Timers);
+             //if remotetimers plugin is available, take timers also from him
+             if (drawRemoteTimers) {
+                 cTimer* remoteTimer = NULL;
+@@ -368,7 +369,7 @@ void cNopacityDisplayMenu::SetMessage(eMessageType Type, const char *Text) {
+ }
+ 
+ bool cNopacityDisplayMenu::SetItemEvent(const cEvent *Event, int Index, bool Current,
+-                                        bool Selectable, const cChannel *Channel, bool WithDate, eTimerMatch TimerMatch) {
++                                        bool Selectable, const cChannel *Channel, bool WithDate, eTimerMatch TimerMatch, bool TimerActive) {
+ 
+     if (!config.GetValue("narrowScheduleMenu"))
+         return false;
+@@ -705,7 +706,7 @@ void cNopacityDisplayMenu::Flush(void) {
+     if (MenuCategory() == mcMain) {
+         if (config.GetValue("showDiscUsage"))
+             DrawDisk();
+-        bool timersChanged = Timers.Modified(lastTimersState);
++        bool timersChanged = true;
+         int numConflicts = 0;
+         if (config.GetValue("checkTimerConflict"))
+             numConflicts = CheckTimerConflict(timersChanged);
+diff --git a/displaymenu.h b/displaymenu.h
+index 761bb51..a90e2ce 100644
+--- a/displaymenu.h
++++ b/displaymenu.h
+@@ -37,6 +37,9 @@ private:
+ protected:
+     int Tab(int n);
+ public:
++#ifdef DEPRECATED_SKIN_SETITEMEVENT
++	using cSkinDisplayMenu::SetItemEvent;
++#endif
+     cNopacityDisplayMenu(cImageCache *imgCache);
+     virtual ~cNopacityDisplayMenu();
+     virtual void Scroll(bool Up, bool Page);
+@@ -47,7 +50,7 @@ public:
+     virtual void SetButtons(const char *Red, const char *Green = NULL, const char *Yellow = NULL, const char *Blue = NULL);
+     virtual void SetMessage(eMessageType Type, const char *Text);
+     virtual void SetItem(const char *Text, int Index, bool Current, bool Selectable);
+-    virtual bool SetItemEvent(const cEvent *Event, int Index, bool Current, bool Selectable, const cChannel *Channel, bool WithDate, eTimerMatch TimerMatch);
++    virtual bool SetItemEvent(const cEvent *Event, int Index, bool Current, bool Selectable, const cChannel *Channel, bool WithDate, eTimerMatch TimerMatch, bool TimerActive);
+     virtual bool SetItemTimer(const cTimer *Timer, int Index, bool Current, bool Selectable);
+     virtual bool SetItemChannel(const cChannel *Channel, int Index, bool Current, bool Selectable, bool WithProvider);
+     virtual bool SetItemRecording(const cRecording *Recording, int Index, bool Current, bool Selectable, int Level, int Total, int New);
+@@ -61,4 +64,4 @@ public:
+     virtual const cFont *GetTextAreaFont(bool FixedFont) const;
+ };
+ 
+-#endif //__NOPACITY_DISPLAYMENU_H
+\ No newline at end of file
++#endif //__NOPACITY_DISPLAYMENU_H
+diff --git a/geometrymanager.c b/geometrymanager.c
+index 0c0b938..e24afe9 100644
+--- a/geometrymanager.c
++++ b/geometrymanager.c
+@@ -200,7 +200,7 @@ void cGeometryManager::SetDisplayReplaySizes(void) {
+     replayJumpHeight = replayControlsHeight;
+ 
+     replayIconBorder = 5;
+-    replayIconSize = min(replayControlsHeight - 2*replayIconBorder, 128);
++    replayIconSize = std::min(replayControlsHeight - 2*replayIconBorder, 128);
+ 
+     replayMessageY = replayHeight - replayFooterHeight;
+     replayMessageWidth = replayWidth * 75 / 100;
+diff --git a/imagecache.c b/imagecache.c
+index 29690c3..e7db262 100644
+--- a/imagecache.c
++++ b/imagecache.c
+@@ -43,7 +43,8 @@ void cImageCache::CreateCache(void) {
+     //Channel Logos
+     if (config.GetValue("numLogosInitial") > 0) {
+         int channelsCached = 0;
+-        for (const cChannel *channel = Channels.First(); channel; channel = Channels.Next(channel)) {
++        LOCK_CHANNELS_READ;
++        for (const cChannel *channel = Channels->First(); channel; channel = Channels->Next(channel)) {
+             if (channelsCached >= config.GetValue("numLogosInitial"))
+                 break;
+             if (!channel->GroupSep()) {
+diff --git a/menudetailview.c b/menudetailview.c
+index e2a323a..d59b186 100644
+--- a/menudetailview.c
++++ b/menudetailview.c
+@@ -66,7 +66,8 @@ void cNopacityDetailView::InitiateViewType(void) {
+                 dateTime = cString::sprintf("%s  %s - %s (%d %s)", *ev->GetDateString(), *ev->GetTimeString(), *ev->GetEndTimeString(), ev->Duration()/60, tr("min"));
+             }
+             view->SetDateTime(*dateTime);
+-            view->SetChannel(Channels.GetByChannelID(ev->ChannelID(), true));
++            LOCK_CHANNELS_READ;
++            view->SetChannel(Channels->GetByChannelID(ev->ChannelID(), true));
+             view->SetEventID(ev->EventID());
+             break; }
+         case dvRecording: {
+@@ -89,7 +90,8 @@ void cNopacityDetailView::InitiateViewType(void) {
+                 view->SetTitle(info->Title());
+                 view->SetSubTitle(info->ShortText());
+                 view->SetInfoText(info->Description());
+-                view->SetChannel(Channels.GetByChannelID(info->ChannelID(), true));
++                LOCK_CHANNELS_READ;
++                view->SetChannel(Channels->GetByChannelID(info->ChannelID(), true));
+             } else {
+                 view->SetTitle(rec->Name());
+             }
+@@ -176,7 +178,8 @@ std::string cNopacityDetailView::LoadReruns(void) {
+                     continue;
+                 i++;
+                 sstrReruns  << *DayDateTime(r->event->StartTime());
+-                cChannel *channel = Channels.GetByChannelID(r->event->ChannelID(), true, true);
++                LOCK_CHANNELS_READ;
++                const cChannel *channel = Channels->GetByChannelID(r->event->ChannelID(), true, true);
+                 if (channel) {
+                     sstrReruns << ", " << trVDR("Channel") << " " << channel->Number() << ":";
+                     sstrReruns << " " << channel->ShortName(true);
+@@ -262,7 +265,8 @@ std::string cNopacityDetailView::LoadRecordingInformation(void) {
+ 
+     std::stringstream sstrInfo;
+ 
+-    cChannel *channel = Channels.GetByChannelID(Info->ChannelID());
++    LOCK_CHANNELS_READ;
++    const cChannel *channel = Channels->GetByChannelID(Info->ChannelID());
+     if (channel)
+         sstrInfo << trVDR("Channel") << ": " << channel->Number() << " - " << channel->Name() << std::endl;
+     if (nRecSize < 0) {
+diff --git a/menuitem.c b/menuitem.c
+index 0bf0e49..96f2542 100644
+--- a/menuitem.c
++++ b/menuitem.c
+@@ -832,10 +832,8 @@ void cNopacityChannelMenuItem::DrawBackground(void) {
+ }
+ 
+ void cNopacityChannelMenuItem::readCurrentEPG(void) {
+-    cSchedulesLock schedulesLock;
+-    const cSchedules *schedules = cSchedules::Schedules(schedulesLock);
+-    const cSchedule *Schedule = NULL;
+-	Schedule = schedules->GetSchedule(Channel);
++    LOCK_SCHEDULES_READ;
++    const cSchedule *Schedule = Schedules->GetSchedule(Channel);
+ 	if (!Schedule) {
+ 		strEpgInfo = tr("No EPG Information found");
+         strTimeInfo = "";
+@@ -853,10 +851,8 @@ void cNopacityChannelMenuItem::readCurrentEPG(void) {
+ 
+ std::string cNopacityChannelMenuItem::readEPG(void) {
+     std::stringstream sstrText;
+-    cSchedulesLock schedulesLock;
+-    const cSchedules *schedules = cSchedules::Schedules(schedulesLock);
+-    const cSchedule *Schedule = NULL;
+-	Schedule = schedules->GetSchedule(Channel);
++    LOCK_SCHEDULES_READ;
++    const cSchedule *Schedule = Schedules->GetSchedule(Channel);
+ 	if (!Schedule) {
+ 		sstrText << tr("No EPG Information found");
+ 	} else {
