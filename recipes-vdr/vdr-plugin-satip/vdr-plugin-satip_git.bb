@@ -3,10 +3,10 @@ AUTHOR = "Rolf Ahrenberg"
 LICENSE = "GPLv2"
 LIC_FILES_CHKSUM = "file://COPYING;md5=892f569a555ba9c07a568a7c0c4fa63a"
 
-PR = "r23"
+PR = "r24"
 
 SRC_URI = "git://github.com/rofafor/vdr-plugin-satip.git"
-SRCREV = "43373b69519a5736052d91be99712112b4b6a07d"
+SRCREV = "a7625c028c460b8350a023db495e2b6b0bc93607"
 
 S = "${WORKDIR}/git"
 
