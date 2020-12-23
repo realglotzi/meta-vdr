@@ -12,9 +12,9 @@ The following plugins are available:
 * epgsync
 * extrecmenu
 * femon
-* graplcd
+* graplcd (not working)
 * mlist
-* neutrinoepg
+* neutrinoepg (not working)
 * remote
 * rpihddevice
 * satip
